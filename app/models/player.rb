@@ -1,7 +1,2 @@
-require 'virtus'
-
-class Player
-  include Virtus
-
-  attribute :name, String
+class Player < ActiveRecord::Base
 end
