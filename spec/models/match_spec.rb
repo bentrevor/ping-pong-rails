@@ -1,34 +1,18 @@
 require 'spec_helper'
 
 describe Match do
-  let(:player1) { Player.new({:name => "first_player"}) }
-  let(:player2) { Player.new({:name => "second_player"}) }
-  let(:player3) { Player.new({:name => "third_player"}) }
-  let(:player4) { Player.new({:name => "fourth_player"}) }
+  it "has ids for four player" do
+    match = Match.new
 
-  let(:match) { Match.new({:player1 => player1, 
-                           :player2 => player2}) }
-
-  it "can have two players" do
-    match.players.should include(player1)
-    match.players.should include(player2)
-    match.players.should_not include(player3)
-    match.players.should_not include(player4)
+    match.should respond_to(:player1_id)
+    match.should respond_to(:player2_id)
+    match.should respond_to(:player3_id)
+    match.should respond_to(:player4_id)
   end
 
-  it "can have four players" do
-    match = Match.new({:player1 => player1,
-                       :player2 => player2,
-                       :player3 => player3,
-                       :player4 => player4})
+  it "requires at least two players" do
+    match = Match.new({:player1_id => 1})
 
-    match.players.should include(player1)
-    match.players.should include(player2)
-    match.players.should include(player3)
-    match.players.should include(player4)
-  end
-
-  it "is not completed when it starts" do
-    match.completed?.should == false
+    match.save.should be false
   end
 end

@@ -1,4 +1,5 @@
 ENV["RAILS_ENV"] ||= 'test'
+$: << Dir.pwd
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
