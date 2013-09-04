@@ -1,0 +1,10 @@
+<h1>players#new</h1>
+
+<%= form_for @player, :url => {:action => :create} do |f| %>
+
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+
+  <%= f.submit 'Submit' %>
+
+<% end %>
