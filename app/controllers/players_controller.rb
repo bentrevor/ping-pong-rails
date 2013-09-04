@@ -10,6 +10,11 @@ class PlayersController < ApplicationController
   end
 
   def create
-    Player.create({:name => params[:player][:name]})
+    Player.create(player_params)
+  end
+
+  private
+  def player_params
+    params.require(:player).permit(:name)
   end
 end

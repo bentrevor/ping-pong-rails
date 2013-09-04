@@ -12,4 +12,11 @@ describe Player do
 
     player.save.should be false
   end
+
+  it "needs a unique name" do
+    Player.create({:name => "Ben"})
+    player = Player.new({:name => "Ben"})
+
+    player.save.should be false
+  end
 end
