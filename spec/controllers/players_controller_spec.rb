@@ -15,4 +15,13 @@ describe PlayersController do
     Player.count.should == 0
     assigns(:player).should_not be nil
   end
+
+  it "can list all players" do
+    add_players "player1", "player2", "player3"
+    get :index
+
+    players = assigns(:players)
+
+    players.length.should == 3
+  end
 end

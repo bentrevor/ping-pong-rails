@@ -15,11 +15,4 @@ describe Match do
 
     match.save.should be false
   end
-
-  it "starts not completed" do
-    match = Match.new({:player1_id => 1,
-                       :player2_id => 2})
-
-    match.completed.should be false
-  end
 end

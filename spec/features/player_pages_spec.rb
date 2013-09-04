@@ -9,4 +9,12 @@ describe "Player pages" do
 
     Player.count.should == 1
   end
+
+  it "shows all players" do
+    add_players 'player1', 'player2'
+    visit '/players/index'
+
+    page.body.should have_content 'player1'
+    page.body.should have_content 'player2'
+  end
 end

@@ -1,5 +1,4 @@
 ENV["RAILS_ENV"] ||= 'test'
-$: << Dir.pwd
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'capybara/rspec'
@@ -17,4 +16,10 @@ RSpec.configure do |config|
   config.infer_base_class_for_anonymous_controllers = false
 
   config.order = "random"
+end
+
+def add_players(*names)
+  names.each do |name|
+    Player.create({:name => name})
+  end
 end
