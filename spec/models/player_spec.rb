@@ -6,4 +6,10 @@ describe Player do
 
     player.name.should == "Ben"
   end
+
+  it "can't have a blank name" do
+    player = Player.new({:name => ""})
+
+    player.save.should be false
+  end
 end

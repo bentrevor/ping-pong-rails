@@ -1,3 +1,3 @@
 PingPong::Application.routes.draw do
-  get "matches/index"
+  post 'players/create'
 end
