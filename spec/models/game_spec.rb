@@ -12,10 +12,11 @@ describe Game do
       game.should respond_to(:player4_id)
     end
 
-    it "has a winner and a score with default values" do
+    it "has default values for winner, scores, and completed" do
       game.winner.should == 0
       game.winner_score.should == 0
       game.loser_score.should == 0
+      game.completed.should be false
     end
   end
 
