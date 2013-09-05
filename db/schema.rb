@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130905162213) do
+ActiveRecord::Schema.define(version: 20130905185908) do
 
   create_table "games", force: true do |t|
     t.boolean  "completed",    default: false
@@ -24,16 +24,14 @@ ActiveRecord::Schema.define(version: 20130905162213) do
   end
 
   create_table "matches", force: true do |t|
-    t.integer  "game1_id"
-    t.integer  "game2_id"
-    t.integer  "game3_id"
     t.boolean  "completed",  default: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "player1_id"
-    t.integer  "player2_id"
-    t.integer  "player3_id"
-    t.integer  "player4_id"
+  end
+
+  create_table "matches_players", force: true do |t|
+    t.integer "match_id"
+    t.integer "player_id"
   end
 
   create_table "players", force: true do |t|

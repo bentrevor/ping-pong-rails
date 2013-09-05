@@ -8,12 +8,11 @@ describe MatchesController do
 
     Match.count.should == 0
     match.should_not == nil
-    match.game1_id.should == nil
   end
 
-  it "can save a match" do
-    post :create, :match => {:player1_id => 1, 
-                             :player2_id => 2}
+  it "can create a match given two names" do
+    post :create, :match => {:player1_name => "player1 name", 
+                             :player2_name => "player2 name"}
     match = assigns(:match)
 
     Match.count.should == 1
@@ -55,15 +54,15 @@ describe MatchesController do
 
   private
   def create_three_matches
-    post :create, :match => {:player1_id => 1, :player2_id => 2}
-    post :create, :match => {:player1_id => 1, :player2_id => 2}
-    post :create, :match => {:player1_id => 1, :player2_id => 2}
+    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name"}
+    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name"}
+    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name"}
   end
 
   def create_four_completed_matches
-    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
-    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
-    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
-    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
+    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
+    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
+    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
+    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
   end
 end
