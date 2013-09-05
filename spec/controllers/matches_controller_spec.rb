@@ -12,14 +12,14 @@ describe MatchesController do
   end
 
   it "can save a match" do
-    post :create, :match => {:game1_id => 1, 
-                             :game2_id => 2}
+    post :create, :match => {:player1_id => 1, 
+                             :player2_id => 2}
     match = assigns(:match)
 
     Match.count.should == 1
   end
 
-  context "showing all matches" do
+  context "listing matches" do
     it "can list all matches" do
       create_three_matches
 
@@ -55,15 +55,15 @@ describe MatchesController do
 
   private
   def create_three_matches
-    Match.create({:game1_id => 1, :game2_id => 2})
-    Match.create({:game1_id => 3, :game2_id => 4})
-    Match.create({:game1_id => 5, :game2_id => 6})
+    post :create, :match => {:player1_id => 1, :player2_id => 2}
+    post :create, :match => {:player1_id => 1, :player2_id => 2}
+    post :create, :match => {:player1_id => 1, :player2_id => 2}
   end
 
   def create_four_completed_matches
-    Match.create({:game1_id => 1, :game2_id => 2, :completed => true})
-    Match.create({:game1_id => 3, :game2_id => 4, :completed => true})
-    Match.create({:game1_id => 5, :game2_id => 6, :completed => true})
-    Match.create({:game1_id => 7, :game2_id => 8, :completed => true})
+    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
+    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
+    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
+    post :create, :match => {:player1_id => 1, :player2_id => 2, :completed => true}
   end
 end

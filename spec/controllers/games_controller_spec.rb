@@ -8,18 +8,15 @@ describe GamesController do
 
     Game.count.should == 0
     game.should_not == nil
-    game.player1_id.should == nil
+    game.completed.should == false
   end
 
   it "can save a game" do
-    post :create, :game => {:player1_id => 1, :player2_id => 2}
+    post :create, :game => {:match_id => 1}
     game = assigns(:game)
 
     Game.count.should == 1
-    game.player1_id.should == 1
-    game.player2_id.should == 2
-    game.player3_id.should == nil
-    game.player4_id.should == nil
+    game.match_id.should == 1
   end
 
   it "can list all games" do
@@ -34,8 +31,8 @@ describe GamesController do
 
   private
   def create_three_games
-    Game.create({:player1_id => 1, :player2_id => 2})
-    Game.create({:player1_id => 1, :player2_id => 2})
-    Game.create({:player1_id => 1, :player2_id => 2})
+    Game.create({:match_id => 1})
+    Game.create({:match_id => 1})
+    Game.create({:match_id => 1})
   end
 end

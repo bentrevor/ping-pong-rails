@@ -1,62 +1,12 @@
 require 'spec_helper'
 
 describe Game do
-  let(:game) { Game.create({:player1_id => 1,
-                            :player2_id => 1}) }
+  it "has default values for winner, scores, and completed" do
+    game = Game.new
 
-  describe "attributes" do
-    it "has ids for four players" do
-      game.should respond_to(:player1_id)
-      game.should respond_to(:player2_id)
-      game.should respond_to(:player3_id)
-      game.should respond_to(:player4_id)
-    end
-
-    it "has default values for winner, scores, and completed" do
-      game.winner.should == 0
-      game.winner_score.should == 0
-      game.loser_score.should == 0
-      game.completed.should == false
-    end
-  end
-
-  it "requires at least two players" do
-    game1 = Game.new({:player1_id => 1})
-    game2 = Game.new({:player2_id => 1})
-
-    game1.save.should == false
-    game2.save.should == false
-  end
-
-  it "doesn't let duplicate ids play" do
-    game1 = Game.new({:player1_id => 1,
-                      :player2_id => 1})
-
-    game2 = Game.new({:player1_id => 1,
-                      :player2_id => 2,
-                      :player3_id => 1,
-                      :player4_id => 1})
-
-    game3 = Game.new({:player1_id => 1,
-                      :player2_id => 2,
-                      :player3_id => 3,
-                      :player4_id => 2})
-
-    game1.save.should == false
-    game2.save.should == false
-    game3.save.should == false
-  end
-
-  it "can't have three players" do
-    game1 = Game.new({:player1_id => 1,
-                      :player2_id => 2,
-                      :player3_id => 3})
-
-    game2 = Game.new({:player1_id => 1,
-                      :player2_id => 2,
-                      :player4_id => 3})
-
-    game1.save.should == false
-    game2.save.should == false
+    game.winner.should == 0
+    game.winner_score.should == 0
+    game.loser_score.should == 0
+    game.completed.should == false
   end
 end

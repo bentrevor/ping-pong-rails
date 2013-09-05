@@ -21,6 +21,6 @@ class MatchesController < ApplicationController
 
   private
   def matches_params
-    params.require(:match).permit(:game1_id, :game2_id)
+    params.require(:match).permit(:player1_id, :player2_id, :completed)
   end
 end

@@ -1,5 +1,5 @@
 PingPong::Application.routes.draw do
-  get 'players/new', :as => 'players'
+  get 'players/new'
   post 'players/create'
   get 'players/index'
 
