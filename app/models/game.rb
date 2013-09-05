@@ -4,6 +4,8 @@ class Game < ActiveRecord::Base
 
   validate  :no_duplicate_ids, :two_or_four_players
 
+  private
+
   def no_duplicate_ids
     ids = [player1_id,
            player2_id,
@@ -17,7 +19,7 @@ class Game < ActiveRecord::Base
 
   def two_or_four_players
     if (player3_id and !player4_id) or (!player3_id and player4_id)
-      errors.add(:oops, "oops players have the same id")
+      errors.add(:wrong_number_of_players, "must have two or four players")
     end
   end
 end

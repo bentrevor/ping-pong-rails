@@ -1,13 +1,22 @@
 require 'spec_helper'
 
 describe Game do
-  it "has ids for four players" do
-    game = Game.new
+  let(:game) { Game.create({:player1_id => 1,
+                            :player2_id => 1}) }
 
-    game.should respond_to(:player1_id)
-    game.should respond_to(:player2_id)
-    game.should respond_to(:player3_id)
-    game.should respond_to(:player4_id)
+  describe "attributes" do
+    it "has ids for four players" do
+      game.should respond_to(:player1_id)
+      game.should respond_to(:player2_id)
+      game.should respond_to(:player3_id)
+      game.should respond_to(:player4_id)
+    end
+
+    it "has a winner and a score with default values" do
+      game.winner.should == 0
+      game.winner_score.should == 0
+      game.loser_score.should == 0
+    end
   end
 
   it "requires at least two players" do
