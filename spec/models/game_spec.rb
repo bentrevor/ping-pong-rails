@@ -16,7 +16,7 @@ describe Game do
       game.winner.should == 0
       game.winner_score.should == 0
       game.loser_score.should == 0
-      game.completed.should be false
+      game.completed.should == false
     end
   end
 
@@ -24,8 +24,8 @@ describe Game do
     game1 = Game.new({:player1_id => 1})
     game2 = Game.new({:player2_id => 1})
 
-    game1.save.should be false
-    game2.save.should be false
+    game1.save.should == false
+    game2.save.should == false
   end
 
   it "doesn't let duplicate ids play" do
@@ -42,9 +42,9 @@ describe Game do
                       :player3_id => 3,
                       :player4_id => 2})
 
-    game1.save.should be false
-    game2.save.should be false
-    game3.save.should be false
+    game1.save.should == false
+    game2.save.should == false
+    game3.save.should == false
   end
 
   it "can't have three players" do
@@ -56,7 +56,7 @@ describe Game do
                       :player2_id => 2,
                       :player4_id => 3})
 
-    game1.save.should be false
-    game2.save.should be false
+    game1.save.should == false
+    game2.save.should == false
   end
 end
