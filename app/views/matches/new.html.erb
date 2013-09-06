@@ -1,1 +1,20 @@
 <h1>matches#new</h1>
+
+<%= form_for @match, :url => {:action => :create} do |f| %>
+
+  <label for="player_1_name">Player 1 name</label>
+  <input id="player_1_name" name="match[names][]" type="text" />
+
+  <label for="player_2_name">Player 2 name</label>
+  <input id="player_2_name" name="match[names][]" type="text" />
+
+  <label for="player_3_name">Player 3 name</label>
+  <input id="player_3_name" name="match[names][]" type="text" />
+
+  <label for="player_4_name">Player 4 name</label>
+  <input id="player_4_name" name="match[names][]" type="text" />
+
+  <%= f.submit 'Submit' %>
+
+<% end %>
+

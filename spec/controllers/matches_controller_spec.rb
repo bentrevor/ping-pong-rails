@@ -54,8 +54,6 @@ describe MatchesController do
       create_three_matches
       create_four_completed_matches
 
-      puts Match.count
-
       get :finished
 
       matches = assigns(:matches)
