@@ -7,7 +7,7 @@ describe Match do
     match.completed.should be false
   end
 
-  it "has and belongs to many players" do
+  it "has many players" do
     match = Match.new
 
     match.players.count.should == 0

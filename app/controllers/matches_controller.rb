@@ -16,11 +16,20 @@ class MatchesController < ApplicationController
   end
 
   def create
-    @match = Match.create(matches_params)
+    @match = Match.new
+
+    match_params[:names].each do |name|
+      player = Player.find_by_name(name) || Player.create({:name => name})
+
+      @match.players << player
+    end
+
+    @match.completed = match_params[:completed] || false
+    @match.save
   end
 
   private
-  def matches_params
-    params.require(:match).permit(:completed)
+  def match_params
+    params.require(:match).permit(:completed, :names => [])
   end
 end

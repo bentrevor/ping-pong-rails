@@ -19,4 +19,10 @@ describe Player do
 
     player.save.should == false
   end
+
+  it "has many matches" do
+    player = Player.new
+
+    player.matches.count.should == 0
+  end
 end

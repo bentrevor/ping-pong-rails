@@ -11,11 +11,21 @@ describe MatchesController do
   end
 
   it "can create a match given two names" do
-    post :create, :match => {:player1_name => "player1 name", 
-                             :player2_name => "player2 name"}
-    match = assigns(:match)
+    post :create, :match => {:names => ["name 1", "name 2"]}
 
     Match.count.should == 1
+  end
+
+  it "knows which players are playing" do
+    player1 = Player.create({:name => "player1 name"})
+    player2 = Player.create({:name => "player2 name"})
+
+    post :create, :match => {:names => [player1.name, player2.name]}
+
+    match = assigns(:match)
+
+    match.players.count.should == 2
+    match.players.first.name.should == player1.name
   end
 
   context "listing matches" do
@@ -44,6 +54,8 @@ describe MatchesController do
       create_three_matches
       create_four_completed_matches
 
+      puts Match.count
+
       get :finished
 
       matches = assigns(:matches)
@@ -54,15 +66,15 @@ describe MatchesController do
 
   private
   def create_three_matches
-    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name"}
-    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name"}
-    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name"}
+    post :create, :match => {:names => ["player1 name", "player2 name"]}
+    post :create, :match => {:names => ["player1 name", "player2 name"]}
+    post :create, :match => {:names => ["player1 name", "player2 name"]}
   end
 
   def create_four_completed_matches
-    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
-    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
-    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
-    post :create, :match => {:player1_name => "player1 name", :player2_name => "player2 name", :completed => true}
+    post :create, :match => {:names => ["player1 name", "player2 name"], :completed => true}
+    post :create, :match => {:names => ["player1 name", "player2 name"], :completed => true}
+    post :create, :match => {:names => ["player1 name", "player2 name"], :completed => true}
+    post :create, :match => {:names => ["player1 name", "player2 name"], :completed => true}
   end
 end
