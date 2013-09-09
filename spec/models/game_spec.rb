@@ -5,8 +5,8 @@ describe Game do
     game = Game.new
 
     game.winner.should == 0
-    game.winner_score.should == 0
-    game.loser_score.should == 0
+    game.team_1_score.should == 0
+    game.team_2_score.should == 0
     game.completed.should == false
   end
 end

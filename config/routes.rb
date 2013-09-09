@@ -3,12 +3,8 @@ PingPong::Application.routes.draw do
   post 'players/create'
   get 'players/index'
 
-  get 'games/new'
-  post 'games/create'
-  get 'games/index'
+  resources :games
   post 'games/finish'
-  post 'games/update'
-  get 'games/:id', :to => 'games#show'
 
   get 'matches/new'
   post 'matches/create'

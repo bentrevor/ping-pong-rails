@@ -11,6 +11,10 @@ class GamesController < ApplicationController
     @player2_name = match.players[1].name
   end
 
+  def edit
+    @game = Game.find params[:id]
+  end
+
   def update
     @game = Game.find params[:id]
 
@@ -34,6 +38,6 @@ class GamesController < ApplicationController
 
   private
   def game_params
-    params.require(:game).permit(:id, :winner_score, :loser_score, :winner, :match_id)
+    params.require(:game).permit(:id, :team_1_score, :team_2_score, :winner, :match_id)
   end
 end

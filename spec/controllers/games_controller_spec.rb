@@ -29,32 +29,42 @@ describe GamesController do
     games.length.should == 3
   end
 
+  it "can edit a game" do
+    Game.create({:match_id => 1})
+
+    get :edit, :id => 1
+
+    game = assigns(:game)
+
+    game.match_id.should be 1
+  end
+
   it "can finish a game" do
     create_three_games
 
     post :finish, :game => {:id           => 1,
-                            :winner_score => 11,
-                            :loser_score  => 5,
+                            :team_1_score => 11,
+                            :team_2_score  => 5,
                             :winner       => 1}
 
     game = Game.find 1
 
-    game.winner_score.should == 11
-    game.loser_score.should == 5
+    game.team_1_score.should == 11
+    game.team_2_score.should == 5
     game.completed.should be true
   end
 
   it "can update the score without finishing a game" do
     create_three_games
 
-    post :update, :id => 1, :game => {:winner_score => 11,
-                                      :loser_score  => 5,
+    post :update, :id => 1, :game => {:team_1_score => 11,
+                                      :team_2_score  => 5,
                                       :winner       => 1}
 
     game = Game.find 1
 
-    game.winner_score.should == 11
-    game.loser_score.should == 5
+    game.team_1_score.should == 11
+    game.team_2_score.should == 5
     game.completed.should be false
   end
 

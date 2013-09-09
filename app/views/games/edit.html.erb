@@ -1,0 +1,14 @@
+<h1>games#edit</h1>
+
+<%= form_for @game, :url => {:action => :update} do |f| %>
+
+  <%= f.label :team_1_score %>
+  <%= f.text_field :team_1_score %>
+
+  <%= f.label :team_2_score %>
+  <%= f.text_field :team_2_score %>
+
+  <%= f.submit 'Submit' %>
+
+<% end %>
+
