@@ -29,6 +29,21 @@ describe GamesController do
     games.length.should == 3
   end
 
+  it "can finish a game" do
+    create_three_games
+
+    post :finish, :game => {:id           => 1,
+                            :winner_score => 11,
+                            :loser_score  => 5,
+                            :winner       => 1}
+
+    game = Game.find 1
+
+    game.winner_score.should == 11
+    game.loser_score.should == 5
+    game.completed.should be true
+  end
+
   private
   def create_three_games
     Game.create({:match_id => 1})

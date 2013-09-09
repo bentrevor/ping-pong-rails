@@ -30,6 +30,44 @@ describe "Match pages" do
     page.body.should have_content 'player5 vs. player6'
   end
 
+  it "can list all completed matches" do
+    add_players 'player1',
+                'player2',
+                'player3',
+                'player4'
+
+    create_match_between 'player1', 'player2'
+    create_match_between 'player3', 'player4'
+
+    match = Match.first
+    match.completed = true
+    match.save
+
+    visit '/matches/finished'
+
+    page.body.should have_content 'player1 vs. player2'
+    page.body.should_not have_content 'player3 vs. player4'
+  end
+
+  it "can list all incomplete matches" do
+    add_players 'player1',
+                'player2',
+                'player3',
+                'player4'
+
+    create_match_between 'player1', 'player2'
+    create_match_between 'player3', 'player4'
+
+    match = Match.first
+    match.completed = true
+    match.save
+
+    visit '/matches/waiting_list'
+
+    page.body.should_not have_content 'player1 vs. player2'
+    page.body.should have_content 'player3 vs. player4'
+  end
+
   private
   def create_match_between(first_player, second_player)
     visit '/matches/new'

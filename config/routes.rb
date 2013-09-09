@@ -6,6 +6,7 @@ PingPong::Application.routes.draw do
   get 'games/new'
   post 'games/create'
   get 'games/index'
+  post 'games/finish'
 
   get 'matches/new'
   post 'matches/create'

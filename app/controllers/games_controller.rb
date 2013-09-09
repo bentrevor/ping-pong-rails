@@ -11,8 +11,15 @@ class GamesController < ApplicationController
     @game = Game.create(game_params)
   end
 
+  def finish
+    @game = Game.find(game_params[:id])
+
+    @game.completed = true
+    @game.update_attributes(game_params)
+  end
+
   private
   def game_params
-    params.require(:game).permit(:match_id)
+    params.require(:game).permit(:id, :winner_score, :loser_score, :winner, :match_id)
   end
 end
