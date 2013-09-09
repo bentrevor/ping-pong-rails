@@ -1,3 +1,13 @@
 <h1>matches#show</h1>
 
 <p><%= @match.players[0].name %> vs. <%= @match.players[1].name %></p>
+
+<ul>
+  <% @match.games.each do |game| %>
+    <li><%= game.team_1_score %></li>
+    <li><%= game.team_2_score %></li>
+  <% end %>
+</ul>
+
+
+<p>winner: <%= @winner %></p>

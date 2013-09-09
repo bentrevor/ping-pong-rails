@@ -6,10 +6,8 @@ PingPong::Application.routes.draw do
   resources :games
   post 'games/finish'
 
-  get 'matches/new'
-  post 'matches/create'
-  get 'matches/index'
   get 'matches/waiting_list'
   get 'matches/finished'
-  get 'matches/:id', :to => 'matches#show'
+  post 'matches/finish'
+  resources :matches
 end

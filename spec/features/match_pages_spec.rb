@@ -23,7 +23,7 @@ describe "Match pages" do
     create_match_between 'player3', 'player4'
     create_match_between 'player5', 'player6'
 
-    visit '/matches/index'
+    visit '/matches'
 
     page.body.should have_content 'player1 vs. player2'
     page.body.should have_content 'player3 vs. player4'
@@ -74,9 +74,38 @@ describe "Match pages" do
 
     create_match_between 'player1', 'player2'
 
+    match = Match.first
+    match.games[0].update_attributes({:team_1_score => 11, :team_2_score => 5})
+
     visit '/matches/1'
 
     page.body.should have_content 'player1 vs. player2'
+    page.body.should have_content '11'
+    page.body.should have_content '5'
+  end
+
+  it "can enter scores for a match from the browser" do
+    add_players 'player1',
+                'player2'
+
+    create_match_between 'player1', 'player2'
+
+    match = Match.last
+
+    visit "/matches/#{match.id}/edit"
+
+    fill_in :score_1, :with => 1
+    fill_in :score_2, :with => 2
+    fill_in :score_3, :with => 3
+    fill_in :score_4, :with => 4
+    fill_in :score_5, :with => 5
+    fill_in :score_6, :with => 6
+
+    click_on "Submit"
+
+    visit "/matches/#{match.id}"
+
+    page.body.should have_content 'winner: player2'
   end
 
   private

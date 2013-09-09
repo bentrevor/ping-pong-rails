@@ -1,0 +1,26 @@
+<h1>matches#edit</h1>
+
+<%= form_for @match, :url => {:action => :update} do |f| %>
+
+  <label for="score_1">score 1</label>
+  <input id="score_1" name="match[game1][team_1_score]" type="text" />
+
+  <label for="score_2">score 2</label>
+  <input id="score_2" name="match[game1][team_2_score]" type="text" />
+
+  <label for="score_3">score 3</label>
+  <input id="score_3" name="match[game2][team_1_score]" type="text" />
+
+  <label for="score_4">score 4</label>
+  <input id="score_4" name="match[game2][team_2_score]" type="text" />
+
+  <label for="score_5">score 5</label>
+  <input id="score_5" name="match[game3][team_1_score]" type="text" />
+
+  <label for="score_6">score 6</label>
+  <input id="score_6" name="match[game3][team_2_score]" type="text" />
+
+  <%= f.submit 'Submit' %>
+
+<% end %>
+

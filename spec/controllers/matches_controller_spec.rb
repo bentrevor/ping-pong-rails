@@ -28,6 +28,29 @@ describe MatchesController do
     match.players.first.name.should == player1.name
   end
 
+  it "can finish a match" do
+    match = Match.new
+    match.save
+
+    post :update, :id => match.id, :match =>
+                                     {:game1 => {:team_1_score => 1, :team_2_score => 2},
+                                      :game2 => {:team_1_score => 3, :team_2_score => 4},
+                                      :game3 => {:team_1_score => 5, :team_2_score => 6}}
+
+    match = assigns(:match)
+    game1 = match.games[0]
+    game2 = match.games[1]
+    game3 = match.games[2]
+
+    match.completed.should == true
+    game1.team_1_score.should == 1
+    game1.team_2_score.should == 2
+    game2.team_1_score.should == 3
+    game2.team_2_score.should == 4
+    game3.team_1_score.should == 5
+    game3.team_2_score.should == 6
+  end
+
   context "listing matches" do
     it "can list all matches" do
       create_three_matches
