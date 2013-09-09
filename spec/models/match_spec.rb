@@ -12,4 +12,10 @@ describe Match do
 
     match.players.count.should == 0
   end
+
+  it "creates three games before creation" do
+    match = Match.create
+
+    match.games.count.should == 3
+  end
 end

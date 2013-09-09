@@ -1,0 +1,7 @@
+<p>yo mama</p>
+
+<ul>
+  <% @matches.each do |match| %>
+    <li><%= match.players[0].name %> vs. <%= match.players[1].name %></li>
+  <% end %>
+</ul>
