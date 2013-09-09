@@ -68,6 +68,17 @@ describe "Match pages" do
     page.body.should have_content 'player3 vs. player4'
   end
 
+  it "can show an individual match" do
+    add_players 'player1',
+                'player2'
+
+    create_match_between 'player1', 'player2'
+
+    visit '/matches/1'
+
+    page.body.should have_content 'player1 vs. player2'
+  end
+
   private
   def create_match_between(first_player, second_player)
     visit '/matches/new'

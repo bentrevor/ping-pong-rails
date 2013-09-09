@@ -44,6 +44,20 @@ describe GamesController do
     game.completed.should be true
   end
 
+  it "can update the score without finishing a game" do
+    create_three_games
+
+    post :update, :id => 1, :game => {:winner_score => 11,
+                                      :loser_score  => 5,
+                                      :winner       => 1}
+
+    game = Game.find 1
+
+    game.winner_score.should == 11
+    game.loser_score.should == 5
+    game.completed.should be false
+  end
+
   private
   def create_three_games
     Game.create({:match_id => 1})

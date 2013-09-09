@@ -3,6 +3,10 @@ class MatchesController < ApplicationController
     @matches = Match.all
   end
 
+  def show
+    @match = Match.find(params[:id])
+  end
+
   def waiting_list
     @matches = Match.where(:completed => false)
   end
