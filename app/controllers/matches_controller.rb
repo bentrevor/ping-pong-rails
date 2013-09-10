@@ -1,28 +1,33 @@
 class MatchesController < ApplicationController
   def index
     @matches = Match.all
+    @page_title = "All Matches"
   end
 
   def show
     @match = Match.find(params[:id])
-
+    @page_title = "Match ##{@match.id}"
     @winner = winner_of @match
   end
 
   def waiting_list
     @matches = Match.where(:completed => false)
+    @page_title = "Waiting List"
   end
 
   def finished
     @matches = Match.where(:completed => true)
+    @page_title = "Finished Matches"
   end
 
   def new
     @match = Match.new
+    @page_title = "Create new match"
   end
 
   def edit
     @match = Match.find(params[:id])
+    @page_title = "Edit match"
   end
 
   def update

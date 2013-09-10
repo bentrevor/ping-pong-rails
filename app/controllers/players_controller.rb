@@ -3,10 +3,12 @@ require 'app/models/player'
 class PlayersController < ApplicationController
   def index
     @players = Player.all
+    @page_title = "All Players"
   end
 
   def new
     @player = Player.new
+    @page_title = "Create Player"
   end
 
   def create

@@ -11,3 +11,24 @@
  *= require_self
  *= require_tree .
  */
+
+#content_container {
+  margin: auto;
+  width: 80%;
+  background: #999;
+  padding: 10px;
+  text-align: center;
+}
+
+.match {
+  margin: 10px auto;
+  width: 90%;
+  background: #777;
+  height: 2em;
+  text-align: center;
+}
+
+.page_title {
+  margin: 10px auto;
+  text-align: center;
+}
