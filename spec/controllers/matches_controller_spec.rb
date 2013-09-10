@@ -51,6 +51,15 @@ describe MatchesController do
     game3.team_2_score.should == 6
   end
 
+  it "can delete a match" do
+    match = Match.new
+    match.save
+
+    delete :destroy, :id => match.id
+
+    Match.count.should == 0
+  end
+
   context "listing matches" do
     it "can list all matches" do
       create_three_matches

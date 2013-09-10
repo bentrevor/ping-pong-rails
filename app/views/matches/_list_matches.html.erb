@@ -1,5 +1,11 @@
 <ul>
   <% @matches.each do |match| %>
-    <li class="match"><%= match.players[0].name %> vs. <%= match.players[1].name %></li>
+    <li class="match">
+      <%= match.players[0].name %> vs. <%= match.players[1].name %>
+      <%= link_to "Update scores", edit_match_path(match) %>
+      <%= link_to "Delete match", match_path(match), :method => :delete %>
+    </li>
   <% end %>
 </ul>
+
+<%= link_to "Create match", new_match_path %>

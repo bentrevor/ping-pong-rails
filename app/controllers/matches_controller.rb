@@ -52,6 +52,10 @@ class MatchesController < ApplicationController
     @match.save
   end
 
+  def destroy
+    Match.find(params[:id]).destroy
+  end
+
   private
   def match_params
     params.require(:match).permit(:completed, :names => [],
