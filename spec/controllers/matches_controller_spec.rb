@@ -60,6 +60,36 @@ describe MatchesController do
     Match.count.should == 0
   end
 
+  it "redirects to waiting list after creation" do
+    player1 = Player.create({:name => "player1 name"})
+    player2 = Player.create({:name => "player2 name"})
+
+    post :create, :match => {:names => [player1.name, player2.name]}
+
+    response.should redirect_to('/matches/waiting_list')
+  end
+
+  it "redirects to waiting list after destruction" do
+    match = Match.new
+    match.save
+
+    delete :destroy, :id => match.id
+
+    response.should redirect_to('/matches/waiting_list')
+  end
+
+  it "redirects to show after updating" do
+    match = Match.new
+    match.save
+
+    post :update, :id => match.id, :match =>
+                                     {:game1 => {:team_1_score => 1, :team_2_score => 2},
+                                      :game2 => {:team_1_score => 3, :team_2_score => 4},
+                                      :game3 => {:team_1_score => 5, :team_2_score => 6}}
+
+    response.should redirect_to("/matches/#{match.id}")
+  end
+
   context "listing matches" do
     it "can list all matches" do
       create_three_matches

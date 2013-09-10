@@ -24,4 +24,20 @@ describe PlayersController do
 
     players.length.should == 3
   end
+
+  it "can show a player" do
+    created_player = Player.create({:name => "Ben"})
+
+    get :show, :id => created_player.id
+
+    player = assigns(:player)
+
+    player.should == created_player
+  end
+
+  it "redirects after player creation" do
+    post :create, :player => {:name => "Ben"}
+
+    response.should redirect_to(player_path(Player.first.id))
+  end
 end

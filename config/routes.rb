@@ -1,7 +1,8 @@
 PingPong::Application.routes.draw do
-  get 'players/new'
-  post 'players/create'
-  get 'players/index'
+
+  root :to => redirect('/matches/waiting_list')
+
+  resources :players
 
   resources :games
   post 'games/finish'

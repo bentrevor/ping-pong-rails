@@ -12,7 +12,7 @@ describe "Player pages" do
 
   it "shows all players" do
     add_players 'player1', 'player2'
-    visit '/players/index'
+    visit '/players'
 
     page.body.should have_content 'player1'
     page.body.should have_content 'player2'

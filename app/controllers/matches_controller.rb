@@ -37,6 +37,8 @@ class MatchesController < ApplicationController
     @match.games[0].update_attributes(match_params[:game1])
     @match.games[1].update_attributes(match_params[:game2])
     @match.games[2].update_attributes(match_params[:game3])
+
+    redirect_to @match
   end
 
   def create
@@ -50,10 +52,13 @@ class MatchesController < ApplicationController
 
     @match.completed = match_params[:completed] || false
     @match.save
+
+    redirect_to :action => :waiting_list
   end
 
   def destroy
     Match.find(params[:id]).destroy
+    redirect_to :action => :waiting_list
   end
 
   private

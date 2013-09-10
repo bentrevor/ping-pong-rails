@@ -12,7 +12,12 @@ class PlayersController < ApplicationController
   end
 
   def create
-    Player.create(player_params)
+    @player = Player.create(player_params)
+    redirect_to @player
+  end
+
+  def show
+    @player = Player.find(params[:id])
   end
 
   private

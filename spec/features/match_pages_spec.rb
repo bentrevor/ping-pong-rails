@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe "Match pages" do
+  it "redirects the root path to the waiting list" do
+    visit '/'
+
+    current_path.should == '/matches/waiting_list'
+  end
+
   it "can create a match through the form" do
     visit '/matches/new'
 
@@ -141,6 +147,18 @@ describe "Match pages" do
 
     visit '/matches'
     page.body.should have_link 'Update scores', :href => "/matches/#{match.id}/edit"
+  end
+
+  it "has a link to show a match" do
+    add_players 'player1',
+                'player2'
+
+    create_match_between 'player1', 'player2'
+
+    match = Match.first
+
+    visit '/matches'
+    page.body.should have_link 'Show match', :href => "/matches/#{match.id}"
   end
 
   private
