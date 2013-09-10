@@ -1,11 +1,19 @@
 <p><%= @match.players[0].name %> vs. <%= @match.players[1].name %></p>
 
-<ul>
-  <% @match.games.each do |game| %>
-    <li><%= game.team_1_score %></li>
-    <li><%= game.team_2_score %></li>
+<table>
+  <tr>
+    <td>Game</td>
+    <td>Player 1</td>
+    <td>Player 2</td>
+  </tr>
+  <% @match.games.each_with_index do |game, index| %>
+    <tr>
+      <td>Game <%= index + 1 %></td>
+      <td><%= game.team_1_score %></td>
+      <td><%= game.team_2_score %></td>
+    </tr>
   <% end %>
-</ul>
+</table>
 
 
 <p>winner: <%= @winner %></p>
