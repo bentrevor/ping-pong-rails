@@ -1,4 +1,5 @@
 
 <%= link_to "Show match", match_path(match), {:class => 'button_link'} %>
+<%= link_to "Start match", match_path(match), {:class => 'button_link', :method => :start} %>
 <%= link_to "Update scores", edit_match_path(match), { :class => 'button_link' } %>
 <%= link_to "Delete match", match_path(match), {:class => 'button_link', :method => :delete} %>

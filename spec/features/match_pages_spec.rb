@@ -114,6 +114,18 @@ describe "Match pages" do
     page.body.should have_content 'winner: player2'
   end
 
+  it "has a link to start a match" do
+    add_players 'player1',
+                'player2'
+
+    create_match_between 'player1', 'player2'
+    match = Match.first
+
+    visit '/matches/waiting_list'
+
+    page.body.should have_link 'Start match', :href => "/matches/#{match.id}"
+  end
+
   it "has a link to sign up for a match" do
     visit '/matches'
     page.body.should have_link 'Create match', :href => '/matches/new'
@@ -131,10 +143,10 @@ describe "Match pages" do
 
     create_match_between 'player1', 'player2'
 
+    match = Match.first
     visit '/matches/waiting_list'
-    click_on "Delete match"
 
-    Match.count.should == 0
+    page.body.should have_link 'Delete match', :href => "/matches/#{match.id}"
   end
 
   it "has a link to update a match" do

@@ -28,6 +28,28 @@ describe MatchesController do
     match.players.first.name.should == player1.name
   end
 
+  it "can start a match" do
+    match = Match.new
+    match.save
+
+    post :start, :id => match.id
+
+    match = assigns(:match)
+
+    match.in_progress.should == true
+  end
+
+  it "can only start one match at a time" do
+    Match.create
+    Match.create
+
+    post :start, :id => Match.first
+    post :start, :id => Match.last
+
+    Match.first.in_progress.should == true
+    Match.last.in_progress.should == false
+  end
+
   it "can finish a match" do
     match = Match.new
     match.save

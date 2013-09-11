@@ -41,6 +41,14 @@ class MatchesController < ApplicationController
     redirect_to @match
   end
 
+  def start
+    @match = Match.find params[:id]
+
+    if no_in_progress_matches?
+      @match.update_attributes({:in_progress => true})
+    end
+  end
+
   def create
     @match = Match.new
 
@@ -86,5 +94,15 @@ class MatchesController < ApplicationController
     else
       match.players[1].name
     end
+  end
+
+  def no_in_progress_matches?
+    Match.all.each do |match|
+      if match.in_progress
+        return false
+      end
+    end
+
+    true
   end
 end
