@@ -2,9 +2,7 @@
   <% @matches.each do |match| %>
     <li><div class="match">
       <span class="player_names"><%= match.players[0].name %> vs. <%= match.players[1].name %></span>
-      <%= link_to "Show match", match_path(match), {:class => 'button_link'} %>
-      <%= link_to "Update scores", edit_match_path(match), { :class => 'button_link' } %>
-      <%= link_to "Delete match", match_path(match), {:class => 'button_link', :method => :delete} %>
+      <span class="match_buttons"><%= render "match_buttons", :match => match %></span>
     </div></li>
   <% end %>
 </ul>

@@ -40,14 +40,13 @@ describe GamesController do
   end
 
   it "can finish a game" do
-    create_three_games
+    Game.create({:match_id => 1})
 
-    post :finish, :game => {:id           => 1,
+    post :finish, :game => {:id           => Game.first.id,
                             :team_1_score => 11,
-                            :team_2_score  => 5,
-                            :winner       => 1}
+                            :team_2_score => 5}
 
-    game = Game.find 1
+    game = Game.first
 
     game.team_1_score.should == 11
     game.team_2_score.should == 5
@@ -57,11 +56,11 @@ describe GamesController do
   it "can update the score without finishing a game" do
     create_three_games
 
-    post :update, :id => 1, :game => {:team_1_score => 11,
-                                      :team_2_score  => 5,
-                                      :winner       => 1}
+    post :update, :id => Game.first.id, 
+                  :game => {:team_1_score => 11,
+                            :team_2_score  => 5}
 
-    game = Game.find 1
+    game = Game.first
 
     game.team_1_score.should == 11
     game.team_2_score.should == 5
