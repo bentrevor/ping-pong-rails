@@ -6,16 +6,6 @@ class PlayersController < ApplicationController
     @page_title = "All Players"
   end
 
-  def new
-    @player = Player.new
-    @page_title = "Create Player"
-  end
-
-  def create
-    @player = Player.create(player_params)
-    redirect_to @player
-  end
-
   def show
     @player = Player.find(params[:id])
   end

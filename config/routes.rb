@@ -2,7 +2,7 @@ PingPong::Application.routes.draw do
 
   root :to => redirect('/matches/waiting_list')
 
-  resources :players
+  resources :players, :only => [:show, :index]
 
   resources :games
   post 'games/finish'
