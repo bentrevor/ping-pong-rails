@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe Match do
-  it "is not completed when created" do
+  it "is not completed or in progress when created" do
     match = Match.new
     
     match.completed.should be false
+    match.in_progress.should be false
   end
 
   it "has many players" do

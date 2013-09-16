@@ -1,0 +1,19 @@
+<p><%= @in_progress.players[0].name %> vs. <%= @in_progress.players[1].name %></p>
+
+<table>
+  <tr>
+    <td>Game</td>
+    <td>Player 1</td>
+    <td>Player 2</td>
+  </tr>
+  <% @in_progress.games.each_with_index do |game, index| %>
+    <tr>
+      <td>Game <%= index + 1 %></td>
+      <td><%= game.team_1_score %></td>
+      <td><%= game.team_2_score %></td>
+    </tr>
+  <% end %>
+</table>
+
+
+<p>winner: <%= @winner %></p>

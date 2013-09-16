@@ -1,6 +1,27 @@
 require 'spec_helper'
 
 describe "Match pages" do
+  context "in_progress page" do
+    it "redirects to waiting_list when no in-progress matches" do
+      visit '/matches/in_progress'
+
+      current_path.should == '/matches/waiting_list'
+    end
+
+    it "shows the currently in_progress match" do
+      create_match_between 'player1', 'player2'
+      match = Match.first
+      match.update_attributes({:in_progress => true})
+      match.games[0].update_attributes({:team_1_score => 11, :team_2_score => 5})
+
+      visit '/matches/in_progress'
+
+      page.body.should have_content 'player1 vs. player2'
+      page.body.should have_content '11'
+      page.body.should have_content '5'
+    end
+  end
+
   it "redirects the root path to the waiting list" do
     visit '/'
 
@@ -74,6 +95,25 @@ describe "Match pages" do
     page.body.should have_content 'player3 vs. player4'
   end
 
+  it "doesn't show in-progress matches on the waiting_list page" do
+    add_players 'player1',
+                'player2',
+                'player3',
+                'player4'
+
+    create_match_between 'player1', 'player2'
+    create_match_between 'player3', 'player4'
+
+    match = Match.first
+    match.in_progress = true
+    match.save
+
+    visit '/matches/waiting_list'
+
+    page.body.should_not have_content 'player1 vs. player2'
+    page.body.should have_content 'player3 vs. player4'
+  end
+
   it "can show an individual match" do
     add_players 'player1',
                 'player2'
@@ -123,7 +163,7 @@ describe "Match pages" do
 
     visit '/matches/waiting_list'
 
-    page.body.should have_link 'Start match', :href => "/matches/#{match.id}"
+    page.body.should have_link 'Start match', :href => "/matches/#{match.id}/start"
   end
 
   it "has a link to sign up for a match" do

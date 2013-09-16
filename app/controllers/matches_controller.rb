@@ -11,13 +11,19 @@ class MatchesController < ApplicationController
   end
 
   def waiting_list
-    @matches = Match.where(:completed => false)
+    @matches = Match.where(:completed => false, :in_progress => false)
     @page_title = "Waiting List"
   end
 
   def finished
     @matches = Match.where(:completed => true)
     @page_title = "Finished Matches"
+  end
+
+  def in_progress
+    @in_progress = Match.where(:in_progress => true).first
+
+    redirect_to(:action => :waiting_list) unless @in_progress
   end
 
   def new

@@ -176,9 +176,23 @@ describe MatchesController do
 
       matches.length.should == 4
     end
+
+    it "can show the in_progress match" do
+      create_three_matches
+      create_four_completed_matches
+
+      post :start, :id => Match.last.id
+
+      get :in_progress
+
+      match_in_progress = assigns(:in_progress)
+
+      match_in_progress.should == Match.last
+    end
   end
 
   private
+
   def create_three_matches
     post :create, :match => {:names => ["player1 name", "player2 name"]}
     post :create, :match => {:names => ["player1 name", "player2 name"]}

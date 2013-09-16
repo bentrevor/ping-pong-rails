@@ -9,6 +9,7 @@ PingPong::Application.routes.draw do
 
   get 'matches/waiting_list'
   get 'matches/finished'
-  post 'matches/start'
+  get 'matches/in_progress'
+  post 'matches/:id/start', :to => 'matches#start', :as => :matches_start
   resources :matches
 end
