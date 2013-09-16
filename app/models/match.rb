@@ -7,7 +7,11 @@ class Match < ActiveRecord::Base
   private
 
   def create_games
-    3.times do
+    if self.number_of_games.nil? or self.number_of_games.even?
+      self.number_of_games = 3
+    end
+
+    self.number_of_games.times do
       self.games << Game.new
     end
   end

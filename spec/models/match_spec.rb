@@ -13,9 +13,9 @@ describe Match do
     match.players.count.should == 0
   end
 
-  it "creates three games before creation" do
-    match = Match.create
+  it "creates a given number of games before creation" do
+    match = Match.create({:number_of_games => 7})
 
-    match.games.count.should == 3
+    match.games.count.should == 7
   end
 end

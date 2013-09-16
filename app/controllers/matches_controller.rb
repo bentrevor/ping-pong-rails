@@ -59,6 +59,7 @@ class MatchesController < ApplicationController
     end
 
     @match.completed = match_params[:completed] || false
+    @match.number_of_games = match_params[:number_of_games]
     @match.save
 
     redirect_to :action => :waiting_list
@@ -70,8 +71,11 @@ class MatchesController < ApplicationController
   end
 
   private
+
   def match_params
-    params.require(:match).permit(:completed, :names => [],
+    params.require(:match).permit(:completed,
+                                  :number_of_games,
+                                  :names => [],
                                   :game1 => [:team_1_score, :team_2_score],
                                   :game2 => [:team_1_score, :team_2_score],
                                   :game3 => [:team_1_score, :team_2_score])
