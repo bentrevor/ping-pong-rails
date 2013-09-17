@@ -19,4 +19,10 @@ describe Match do
 
     match.games.count.should == 7
   end
+
+  it "has many teams" do
+    match = Match.new
+
+    match.teams.count.should == 0
+  end
 end
