@@ -61,9 +61,9 @@ describe MatchesController do
     end
 
     it "can delete a match" do
-      match = Match.create({:number_of_games => 3})
+      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
-      delete :destroy, :id => match.id
+      delete :destroy, :id => Match.first.id
 
       Match.count.should == 0
     end
@@ -79,33 +79,31 @@ describe MatchesController do
       end
 
       it "redirects to waiting list after destruction" do
-        match = Match.new
-        match.save
+        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
-        delete :destroy, :id => match.id
+        delete :destroy, :id => Match.first.id
 
         response.should redirect_to('/matches/waiting_list')
       end
 
       it "redirects to show after updating" do
-        match = Match.new
-        match.save
+        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
-        post :update, :id => match.id, :match =>
-                                         {:game1 => {:team_1_score => 1, :team_2_score => 2},
-                                          :game2 => {:team_1_score => 3, :team_2_score => 4},
-                                          :game3 => {:team_1_score => 5, :team_2_score => 6}}
+      post :update, :id => Match.first.id, :match =>
+                                             {:game1 => {:team_1_score => 1, :team_2_score => 2},
+                                              :game2 => {:team_1_score => 3, :team_2_score => 4},
+                                              :game3 => {:team_1_score => 5, :team_2_score => 6}}
 
-        response.should redirect_to("/matches/#{match.id}")
+        response.should redirect_to("/matches/#{Match.first.id}")
       end
     end
   end
 
   context "updating match state" do
     it "can start a match" do
-      match = Match.create({:number_of_games => 3})
+      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
-      post :start, :id => match.id
+      post :start, :id => Match.first.id
 
       match = assigns(:match)
 
@@ -113,8 +111,8 @@ describe MatchesController do
     end
 
     it "can only start one match at a time" do
-      Match.create
-      Match.create
+      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
       post :start, :id => Match.first
       post :start, :id => Match.last
@@ -124,13 +122,12 @@ describe MatchesController do
     end
 
     it "can finish a match" do
-      match = Match.new
-      match.save
+      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
-      post :update, :id => match.id, :match =>
-                                       {:game1 => {:team_1_score => 1, :team_2_score => 2},
-                                        :game2 => {:team_1_score => 3, :team_2_score => 4},
-                                        :game3 => {:team_1_score => 5, :team_2_score => 6}}
+      post :update, :id => Match.first.id, :match =>
+                                             {:game1 => {:team_1_score => 1, :team_2_score => 2},
+                                              :game2 => {:team_1_score => 3, :team_2_score => 4},
+                                              :game3 => {:team_1_score => 5, :team_2_score => 6}}
 
       match = assigns(:match)
       game1 = match.games[0]
