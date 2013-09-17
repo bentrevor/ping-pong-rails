@@ -1,9 +1,21 @@
 class Match < ActiveRecord::Base
-  has_and_belongs_to_many :players
   has_many :games
   has_many :teams
+  has_many :players, :through => :teams
 
   before_create :create_games
+
+  def players
+    players = []
+    
+    self.teams.each do |team|
+      team.players.each do |player|
+        players << player
+      end
+    end
+
+    players
+  end
 
   private
 

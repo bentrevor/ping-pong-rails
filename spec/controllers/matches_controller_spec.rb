@@ -43,18 +43,6 @@ describe MatchesController do
       end
     end
 
-    it "knows which players are playing" do
-      player1 = Player.create({:name => "player1 name"})
-      player2 = Player.create({:name => "player2 name"})
-
-      post :create, :match => {:names => [player1.name, player2.name]}
-
-      match = assigns(:match)
-
-      match.players.count.should == 2
-      match.players.first.name.should == player1.name
-    end
-
     it "can delete a match" do
       match = Match.create({:number_of_games => 3})
 

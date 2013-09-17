@@ -1,41 +1,38 @@
 require 'spec_helper'
 
 describe "Game pages" do
-  it "can view a game" do
+  before :each do
     player1 = Player.create({:name => "player1"})
     player2 = Player.create({:name => "player2"})
+    team1 = Team.new
+    team2 = Team.new
     match = Match.new
-    match.players << player1
-    match.players << player2
-
+    team1.players << player1
+    team2.players << player2
+    match.teams << team1
+    match.teams << team2
     match.save
+  end
 
-    Game.create({:match_id => match.id})
+  it "can view a game" do
+    game = Game.create({:match_id => Match.first.id})
 
-    visit '/games/1'
+    visit "/games/#{game.id}"
 
     page.body.should have_content 'player1 vs. player2'
   end
 
   it "can edit a game" do
-    player1 = Player.create({:name => "player1"})
-    player2 = Player.create({:name => "player2"})
-    match = Match.new
-    match.players << player1
-    match.players << player2
+    game = Game.create({:match_id => Match.first.id})
 
-    match.save
-
-    Game.create({:match_id => match.id})
-
-    visit '/games/1/edit'
+    visit "/games/#{game.id}/edit"
 
     fill_in :game_team_1_score, :with => 5
     fill_in :game_team_2_score, :with => 11
 
     click_on "Submit"
 
-    visit '/games/1'
+    visit "/games/#{game.id}"
 
     page.body.should have_content 'player1 vs. player2'
     page.body.should have_content '5'

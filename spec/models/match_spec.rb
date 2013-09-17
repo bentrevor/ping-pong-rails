@@ -8,10 +8,19 @@ describe Match do
     match.in_progress.should be false
   end
 
-  it "has many players" do
-    match = Match.new
+  it "has many players through teams" do
+    player1 = Player.create({:name => "player1"})
+    player2 = Player.create({:name => "player2"})
 
-    match.players.count.should == 0
+    team = Team.create
+
+    team.players << player1
+    team.players << player2
+    
+    match = Match.create
+    match.teams << team
+
+    match.players.count.should == 2
   end
 
   it "creates a given number of games before creation" do

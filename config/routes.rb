@@ -4,6 +4,8 @@ PingPong::Application.routes.draw do
 
   resources :players, :only => [:show, :index]
 
+  resources :teams, :only => [:create]
+
   resources :games
   post 'games/finish'
 

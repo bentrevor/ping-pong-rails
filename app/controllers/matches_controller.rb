@@ -58,10 +58,12 @@ class MatchesController < ApplicationController
   def create
     @match = Match.new
 
-    match_params[:names].each do |name|
+    match_params[:names].reject {|name| name == ''}.each do |name|
+      team = Team.new
       player = Player.find_by_name(name) || Player.create({:name => name})
 
-      @match.players << player
+      team.players << player
+      @match.teams << team
     end
 
     @match.completed = match_params[:completed] || false
