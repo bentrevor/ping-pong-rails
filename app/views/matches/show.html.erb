@@ -1,10 +1,7 @@
 
+<%= render "match_names", :match => @match %>
+
 <table>
-  <tr>
-    <td></td>
-    <td><%= render "team_names", :team => @match.teams.first %> vs. </td>
-    <td><%= render "team_names", :team => @match.teams.last %></td>
-  </tr>
   <% @match.games.each_with_index do |game, index| %>
     <tr>
       <td>Game <%= index + 1 %></td>

@@ -16,6 +16,19 @@ html {
   background: #222222;
 }
 
+#navbar {
+  margin: 20px auto;
+  width: 80%;
+  background: #cccccc;
+  padding: 10px;
+  text-align: center;
+
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -o-border-radius: 8px;
+  border-radius: 8px;
+}
+
 #content_container {
   margin: auto;
   width: 80%;
@@ -23,10 +36,10 @@ html {
   padding: 10px;
   text-align: center;
 
-  -moz-border-radius: 20px;
-  -webkit-border-radius: 20px;
-  -o-border-radius: 20px;
-  border-radius: 20px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -o-border-radius: 8px;
+  border-radius: 8px;
 
   -moz-box-shadow: 1px 1px 8px black;
   -webkit-box-shadow: 1px 1px 8px black;
@@ -97,3 +110,12 @@ html {
 table {
   margin: 0 auto;
 }
+
+.team_2 {
+  float: right;
+}
+
+.team_1 {
+  float: left;
+}
+

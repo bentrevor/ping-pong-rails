@@ -1,7 +1,9 @@
 <ul>
   <% @matches.each do |match| %>
     <li><div class="match">
-      <span class="player_names"><%= render "team_names", :team => match.teams.first %> vs. <%= render "team_names", :team => match.teams.last %></span>
+      <span class="player_names">
+        <%= render "match_names", :match => match %>
+      </span>
       <span class="match_buttons"><%= render "match_buttons", :match => match %></span>
     </div></li>
   <% end %>

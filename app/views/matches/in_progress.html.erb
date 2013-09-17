@@ -1,6 +1,4 @@
-<span><%= render "team_names", :team => @in_progress.teams.first %></span>
-<span> vs. </span>
-<span><%= render "team_names", :team => @in_progress.teams.last %></span>
+<%= render "match_names", :match => @in_progress %>
 
 <table>
   <% @in_progress.games.each_with_index do |game, index| %>
@@ -12,5 +10,6 @@
   <% end %>
 </table>
 
+<%= link_to "Update scores", edit_match_path(@in_progress), {:class => 'button_link'} %>
 
 <p>winner: <%= @winner %></p>
