@@ -8,6 +8,15 @@ class MatchesController < ApplicationController
     @match = Match.find(params[:id])
     @page_title = "Match ##{@match.id}"
     @winner = winner_of @match
+
+    @team_1_names = ""
+    @team_2_names = ""
+    @match.teams.first.players.each do |player|
+      @team_1_names << player.name + ' '
+    end
+    @match.teams.last.players.each do |player|
+      @team_2_names << player.name + ' '
+    end
   end
 
   def waiting_list
@@ -58,11 +67,7 @@ class MatchesController < ApplicationController
   def create
     @match = Match.new
 
-    match_params[:names].reject {|name| name == ''}.each do |name|
-      team = Team.new
-      player = Player.find_by_name(name) || Player.create({:name => name})
-
-      team.players << player
+    teams_from_params.each do |team|
       @match.teams << team
     end
 
@@ -116,5 +121,37 @@ class MatchesController < ApplicationController
     end
 
     true
+  end
+
+  def teams_from_params
+    teams = []
+    names = match_params[:names]
+
+    if names.length == 2
+      names.each do |name|
+        team = Team.new
+        player = Player.find_by_name(name) || Player.create({:name => name})
+
+        team.players << player
+        teams << team
+      end
+    elsif names.length == 4
+      team1 = Team.new
+      team2 = Team.new
+      player1 = Player.find_by_name(names[0]) || Player.create({:name => names[0]})
+      player2 = Player.find_by_name(names[1]) || Player.create({:name => names[1]})
+      player3 = Player.find_by_name(names[2]) || Player.create({:name => names[2]})
+      player4 = Player.find_by_name(names[3]) || Player.create({:name => names[3]})
+
+      team1.players << player1
+      team1.players << player2
+      team2.players << player3
+      team2.players << player4
+
+      teams << team1
+      teams << team2
+    end
+
+    teams
   end
 end

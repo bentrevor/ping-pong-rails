@@ -28,26 +28,15 @@ describe "Match pages" do
     current_path.should == '/matches/waiting_list'
   end
 
-  describe "creating matches" do
-    it "can create a match through the form" do
-      visit '/matches/new'
+  it "creates teams when a match is made" do
+    visit '/matches/new'
 
-      fill_in :player_1_name, :with => 'first player'
-      fill_in :player_2_name, :with => 'second player'
-      click_on 'Submit'
+    fill_in :player_1_name, :with => 'first player'
+    fill_in :player_2_name, :with => 'second player'
+    click_on 'Submit'
 
-      Match.count.should == 1
-    end
-
-    it "creates teams when a match is made" do
-      visit '/matches/new'
-
-      fill_in :player_1_name, :with => 'first player'
-      fill_in :player_2_name, :with => 'second player'
-      click_on 'Submit'
-
-      Team.count.should == 2
-    end
+    Match.count.should == 1
+    Team.count.should == 2
   end
 
   describe "listing matches" do
@@ -102,11 +91,14 @@ describe "Match pages" do
     end
 
     describe "links" do
-      it "has a link to start a match" do
+      before :each do
         add_players 'player1',
                     'player2'
 
         create_match_between 'player1', 'player2'
+      end
+
+      it "has a link to start a match" do
         match = Match.first
 
         visit '/matches/waiting_list'
@@ -126,23 +118,14 @@ describe "Match pages" do
       end
 
       it "has a link to delete a match" do
-        add_players 'player1',
-                    'player2'
-
-        create_match_between 'player1', 'player2'
-
         match = Match.first
+
         visit '/matches/waiting_list'
 
         page.body.should have_link 'Delete match', :href => "/matches/#{match.id}"
       end
 
       it "has a link to update a match" do
-        add_players 'player1',
-                    'player2'
-
-        create_match_between 'player1', 'player2'
-
         match = Match.first
 
         visit '/matches'
@@ -150,11 +133,6 @@ describe "Match pages" do
       end
 
       it "has a link to show a match" do
-        add_players 'player1',
-                    'player2'
-
-        create_match_between 'player1', 'player2'
-
         match = Match.first
 
         visit '/matches'
@@ -178,6 +156,28 @@ describe "Match pages" do
     page.body.should have_content 'player1 vs. player2'
     page.body.should have_content '11'
     page.body.should have_content '5'
+  end
+
+  it "can show doubles teams" do
+    add_players 'player1',
+                'player2',
+                'player3',
+                'player4'
+
+    visit '/matches/new'
+
+    fill_in :player_1_name, :with => 'player1'
+    fill_in :player_2_name, :with => 'player2'
+    fill_in :player_3_name, :with => 'player3'
+    fill_in :player_4_name, :with => 'player4'
+
+    click_on 'Submit'
+
+    match = Match.first
+    visit "/matches/#{match.id}"
+
+    page.body.should have_content 'player1 player2'
+    page.body.should have_content 'player3 player4'
   end
 
   it "can enter scores for a match from the browser" do

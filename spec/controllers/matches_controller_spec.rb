@@ -17,6 +17,23 @@ describe MatchesController do
       Match.count.should == 1
     end
 
+    describe "creating teams" do
+      it "makes two teams for singles matches" do
+        post :create, :match => {:names => ["name 1", "name 2"]}
+
+        Team.count.should == 2
+      end
+
+      it "makes two teams for doubles matches" do
+        post :create, :match => {:names => ["name 1", 
+                                            "name 2",
+                                            "name 3",
+                                            "name 4"]}
+
+        Team.count.should == 2
+      end
+    end
+
     describe "creating games" do
       it "can have an odd number of games" do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 5}
