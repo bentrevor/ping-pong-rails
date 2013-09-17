@@ -1,10 +1,9 @@
-<p><%= @match.players[0].name %> vs. <%= @match.players[1].name %></p>
 
 <table>
   <tr>
     <td></td>
-    <td><%= @team_1_names %></td>
-    <td><%= @team_2_names %></td>
+    <td><%= render "team_names", :team => @match.teams.first %> vs. </td>
+    <td><%= render "team_names", :team => @match.teams.last %></td>
   </tr>
   <% @match.games.each_with_index do |game, index| %>
     <tr>

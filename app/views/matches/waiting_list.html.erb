@@ -1,7 +1,7 @@
 <ul>
   <% @matches.each do |match| %>
     <li><div class="match">
-      <span class="player_names"><%= match.players[0].name %> vs. <%= match.players[1].name %></span>
+      <span class="player_names"><%= render "team_names", :team => match.teams.first %> vs. <%= render "team_names", :team => match.teams.last %></span>
       <%= link_to "Start match", matches_start_path(match), {:class => 'button_link', :method => :start} %>
       <%= link_to "Delete match", match_path(match), {:class => 'button_link', :method => :delete} %>
     </div></li>

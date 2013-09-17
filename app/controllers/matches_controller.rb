@@ -8,15 +8,6 @@ class MatchesController < ApplicationController
     @match = Match.find(params[:id])
     @page_title = "Match ##{@match.id}"
     @winner = winner_of @match
-
-    @team_1_names = ""
-    @team_2_names = ""
-    @match.teams.first.players.each do |player|
-      @team_1_names << player.name + ' '
-    end
-    @match.teams.last.players.each do |player|
-      @team_2_names << player.name + ' '
-    end
   end
 
   def waiting_list
@@ -125,7 +116,7 @@ class MatchesController < ApplicationController
 
   def teams_from_params
     teams = []
-    names = match_params[:names]
+    names = match_params[:names].reject { |name| name == '' }
 
     if names.length == 2
       names.each do |name|

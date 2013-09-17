@@ -176,8 +176,10 @@ describe "Match pages" do
     match = Match.first
     visit "/matches/#{match.id}"
 
-    page.body.should have_content 'player1 player2'
-    page.body.should have_content 'player3 player4'
+    page.body.should have_content 'player1'
+    page.body.should have_content 'player2'
+    page.body.should have_content 'player3'
+    page.body.should have_content 'player4'
   end
 
   it "can enter scores for a match from the browser" do
@@ -202,6 +204,24 @@ describe "Match pages" do
     visit "/matches/#{match.id}"
 
     page.body.should have_content 'winner: player2'
+  end
+
+  it "lists all four players names for doubles" do
+    visit '/matches/new'
+
+    fill_in :player_1_name, :with => 'player1'
+    fill_in :player_2_name, :with => 'player2'
+    fill_in :player_3_name, :with => 'player3'
+    fill_in :player_4_name, :with => 'player4'
+
+    click_on 'Submit'
+
+    visit '/matches/waiting_list'
+
+    page.body.should have_content 'player1'
+    page.body.should have_content 'player2'
+    page.body.should have_content 'player3'
+    page.body.should have_content 'player4'
   end
 
   private

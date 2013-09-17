@@ -1,0 +1,6 @@
+<% if team.players.length == 1 %>
+  <span><%= team.players.first.name %></span>
+<% else %>
+  <span><%= team.players.first.name %></span><br />
+  <span><%= team.players.last.name %></span>
+<% end %>
