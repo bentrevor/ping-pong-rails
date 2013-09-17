@@ -14,5 +14,6 @@
   <% end %>
 </table>
 
-
-<p>winner: <%= @winner %></p>
+<% if @winning_team %>
+  <p>winner: <%= render "team_names", :team => @winning_team %></p>
+<% end %>

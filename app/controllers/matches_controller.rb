@@ -7,7 +7,7 @@ class MatchesController < ApplicationController
   def show
     @match = Match.find(params[:id])
     @page_title = "Match ##{@match.id}"
-    @winner = winner_of @match
+    @winning_team = Team.find(@match.winner) if @match.winner
   end
 
   def waiting_list
@@ -43,6 +43,9 @@ class MatchesController < ApplicationController
     @match.games[0].update_attributes(match_params[:game1])
     @match.games[1].update_attributes(match_params[:game2])
     @match.games[2].update_attributes(match_params[:game3])
+
+    winning_team = winner_of @match
+    @match.update_attributes({:winner => winning_team.id}) if winning_team
 
     redirect_to @match
   end
@@ -97,10 +100,12 @@ class MatchesController < ApplicationController
       end
     end
 
-    if team_1_wins > team_2_wins
-      match.players[0].name
-    else
-      match.players[1].name
+    victory_threshold = match.number_of_games / 2
+
+    if team_1_wins > victory_threshold
+      match.teams.first
+    elsif team_2_wins > victory_threshold
+      match.teams.last
     end
   end
 

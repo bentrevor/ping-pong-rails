@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130916211147) do
+ActiveRecord::Schema.define(version: 20130917130157) do
 
   create_table "games", force: true do |t|
     t.boolean  "completed",    default: false
@@ -28,11 +28,8 @@ ActiveRecord::Schema.define(version: 20130916211147) do
     t.datetime "updated_at"
     t.boolean  "in_progress",     default: false
     t.integer  "number_of_games"
-  end
-
-  create_table "matches_players", force: true do |t|
-    t.integer "match_id"
-    t.integer "player_id"
+    t.datetime "completed_at"
+    t.integer  "winner"
   end
 
   create_table "players", force: true do |t|

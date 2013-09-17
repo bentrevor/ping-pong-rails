@@ -142,6 +142,18 @@ describe MatchesController do
       game3.team_1_score.should == 5
       game3.team_2_score.should == 6
     end
+
+    it "can declare a winner" do
+      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+
+      post :update, :id => Match.first.id, :match =>
+                                             {:game1 => {:team_1_score => 11, :team_2_score => 2},
+                                              :game2 => {:team_1_score => 11, :team_2_score => 4},
+                                              :game3 => {:team_1_score => 11, :team_2_score => 6}}
+
+      match = assigns(:match)
+      match.winner.should == match.teams.first.id
+    end
   end
 
 
