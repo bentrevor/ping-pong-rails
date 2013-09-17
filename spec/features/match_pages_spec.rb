@@ -82,11 +82,13 @@ describe "Match pages" do
     it "can list all completed matches" do
       match = Match.first
       match.completed = true
+      match.completed_at = "2013-09-17 15:57:45 UTC"
       match.save
 
       visit '/matches/finished'
 
       page.body.should have_content 'player1 vs. player2'
+      page.body.should have_content "2013-09-17 15:57:45 UTC"
       page.body.should_not have_content 'player3 vs. player4'
     end
 

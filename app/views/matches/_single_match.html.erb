@@ -10,6 +10,6 @@
   <% end %>
 </table>
 
-<% if match.winner %>
+<% if match.winner and defined? winning_team %>
   <p>winner: <%= render "team_names", :team => winning_team %></p>
 <% end %>

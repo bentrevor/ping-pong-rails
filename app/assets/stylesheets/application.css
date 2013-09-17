@@ -51,7 +51,7 @@ html {
   margin: 10px auto;
   width: 90%;
   background: #999999;
-  height: 2em;
+  height: 5em;
   padding: .5em;
   text-align: center;
 
@@ -118,4 +118,11 @@ table {
 .team_1 {
   float: left;
 }
+
+.completed_at {
+  float: left;
+  font-size: 0.8em;
+}
+
+
 

@@ -104,10 +104,12 @@ class MatchesController < ApplicationController
     team_2_wins = 0
 
     match.games.each do |game|
-      if game.team_1_score > game.team_2_score
-        team_1_wins += 1
-      else
-        team_2_wins += 1
+      if game.team_1_score and game.team_2_score
+        if game.team_1_score > game.team_2_score
+          team_1_wins += 1
+        else
+          team_2_wins += 1
+        end
       end
     end
 
