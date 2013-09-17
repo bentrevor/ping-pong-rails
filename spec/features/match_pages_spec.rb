@@ -50,11 +50,33 @@ describe "Match pages" do
       create_match_between 'player3', 'player4'
     end
 
-    it "can list all matches" do
+    it "can list all matches with scores" do
       visit '/matches'
+
+      match = Match.last
+
+      visit "/matches/#{match.id}/edit"
+
+      fill_in :score_1, :with => 111111
+      fill_in :score_2, :with => 222222
+      fill_in :score_3, :with => 333333
+      fill_in :score_4, :with => 444444
+      fill_in :score_5, :with => 555555
+      fill_in :score_6, :with => 666666
+
+      click_on "Submit"
+
+      visit "/matches"
 
       page.body.should have_content 'player1 vs. player2'
       page.body.should have_content 'player3 vs. player4'
+
+      page.body.should have_content '111111'
+      page.body.should have_content '222222'
+      page.body.should have_content '333333'
+      page.body.should have_content '444444'
+      page.body.should have_content '555555'
+      page.body.should have_content '666666'
     end
 
     it "can list all completed matches" do
@@ -125,13 +147,6 @@ describe "Match pages" do
         page.body.should have_link 'Delete match', :href => "/matches/#{match.id}"
       end
 
-      it "has a link to update a match" do
-        match = Match.first
-
-        visit '/matches'
-        page.body.should have_link 'Update scores', :href => "/matches/#{match.id}/edit"
-      end
-
       it "has a link to show a match" do
         match = Match.first
 
@@ -192,18 +207,23 @@ describe "Match pages" do
 
     visit "/matches/#{match.id}/edit"
 
-    fill_in :score_1, :with => 1
-    fill_in :score_2, :with => 2
-    fill_in :score_3, :with => 3
-    fill_in :score_4, :with => 4
-    fill_in :score_5, :with => 5
-    fill_in :score_6, :with => 6
+    fill_in :score_1, :with => 111111
+    fill_in :score_2, :with => 222222
+    fill_in :score_3, :with => 333333
+    fill_in :score_4, :with => 444444
+    fill_in :score_5, :with => 555555
+    fill_in :score_6, :with => 666666
 
     click_on "Submit"
 
     visit "/matches/#{match.id}"
 
-    page.body.should have_content 'winner: player2'
+    page.body.should have_content '111111'
+    page.body.should have_content '222222'
+    page.body.should have_content '333333'
+    page.body.should have_content '444444'
+    page.body.should have_content '555555'
+    page.body.should have_content '666666'
   end
 
   it "lists all four players names for doubles" do

@@ -1,1 +1,13 @@
-<%= render "list_matches" %>
+<ul>
+  <% @matches.each do |match| %>
+    <li><div class="match">
+      <span class="player_names">
+        <%= render "single_match", :match => match %>
+      </span>
+      <%= link_to "Show match", match_path(match), {:class => 'button_link'} %>
+      <%= link_to "Delete match", match_path(match), {:class => 'button_link', :method => :delete} %>
+    </div></li>
+  <% end %>
+</ul>
+
+<%= link_to "Create match", new_match_path, { :class => 'button_link' } %>

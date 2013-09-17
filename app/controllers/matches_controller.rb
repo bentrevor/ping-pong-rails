@@ -38,11 +38,20 @@ class MatchesController < ApplicationController
 
   def update
     @match = Match.find params[:id]
-    @match.update_attributes({:completed => true})
 
     @match.games[0].update_attributes(match_params[:game1])
     @match.games[1].update_attributes(match_params[:game2])
     @match.games[2].update_attributes(match_params[:game3])
+
+    redirect_to @match
+  end
+
+  def finish
+    @match = Match.find params[:id]
+
+    @match.update_attributes({:in_progress => false,
+                              :completed => true,
+                              :completed_at => Time.now })
 
     winning_team = winner_of @match
     @match.update_attributes({:winner => winning_team.id}) if winning_team
@@ -56,6 +65,8 @@ class MatchesController < ApplicationController
     if no_in_progress_matches?
       @match.update_attributes({:in_progress => true})
     end
+
+    redirect_to :action => :in_progress
   end
 
   def create

@@ -100,7 +100,7 @@ describe MatchesController do
   end
 
   context "updating match state" do
-    it "can start a match" do
+    it "redirects to in_progress when a match starts" do
       post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
       post :start, :id => Match.first.id
@@ -108,6 +108,7 @@ describe MatchesController do
       match = assigns(:match)
 
       match.in_progress.should == true
+      response.should redirect_to '/matches/in_progress'
     end
 
     it "can only start one match at a time" do
@@ -121,7 +122,7 @@ describe MatchesController do
       Match.last.in_progress.should == false
     end
 
-    it "can finish a match" do
+    it "can update a match without completing it" do
       post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
       post :update, :id => Match.first.id, :match =>
@@ -134,7 +135,7 @@ describe MatchesController do
       game2 = match.games[1]
       game3 = match.games[2]
 
-      match.completed.should == true
+      match.completed.should == false
       game1.team_1_score.should == 1
       game1.team_2_score.should == 2
       game2.team_1_score.should == 3
@@ -143,16 +144,35 @@ describe MatchesController do
       game3.team_2_score.should == 6
     end
 
-    it "can declare a winner" do
-      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+    describe "finishing a match" do
+      before :each do
+        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
-      post :update, :id => Match.first.id, :match =>
-                                             {:game1 => {:team_1_score => 11, :team_2_score => 2},
-                                              :game2 => {:team_1_score => 11, :team_2_score => 4},
-                                              :game3 => {:team_1_score => 11, :team_2_score => 6}}
+        post :update, :id => Match.first.id, :match =>
+                                               {:game1 => {:team_1_score => 11, :team_2_score => 2},
+                                                :game2 => {:team_1_score => 11, :team_2_score => 4},
+                                                :game3 => {:team_1_score => 11, :team_2_score => 6}}
 
-      match = assigns(:match)
-      match.winner.should == match.teams.first.id
+        post :finish, :id => Match.first.id
+        @match = assigns(:match)
+      end
+
+      it "can declare a winner" do
+        @match.winner.should == @match.teams.first.id
+      end
+
+      it "is completed and not in progress" do
+        @match.completed.should == true
+        @match.in_progress.should == false
+      end
+
+      it "redirects to the match" do
+        response.should redirect_to @match
+      end
+
+      it "sets the date completed" do
+        @match.completed_at.should_not == nil
+      end
     end
   end
 

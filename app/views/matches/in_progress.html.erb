@@ -1,15 +1,5 @@
-<%= render "match_names", :match => @in_progress %>
-
-<table>
-  <% @in_progress.games.each_with_index do |game, index| %>
-    <tr>
-      <td>Game <%= index + 1 %></td>
-      <td><%= game.team_1_score %></td>
-      <td><%= game.team_2_score %></td>
-    </tr>
-  <% end %>
-</table>
+<%= render "single_match", :match => @in_progress,
+                           :winning_team => @winning_team %>
 
 <%= link_to "Update scores", edit_match_path(@in_progress), {:class => 'button_link'} %>
-
-<p>winner: <%= @winner %></p>
+<%= link_to "Finish match", matches_finish_path(@in_progress), {:class => 'button_link', :method => :post} %>
