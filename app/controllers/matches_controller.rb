@@ -45,11 +45,19 @@ class MatchesController < ApplicationController
   def in_progress
     @in_progress = Match.where(:in_progress => true).first
 
-    respond_with(@in_progress) do |format|
-      format.html { redirect_to(:action => :waiting_list) unless @in_progress }
-      format.json { return_match_as_json(@in_progress) }
+    if @in_progress
+      respond_with(@in_progress) do |format|
+        format.html
+        format.json { return_match_as_json(@in_progress) }
+      end
+    else
+      @flash = 'There is no match in progress.'
+
+      respond_with(@in_progress) do |format|
+        format.html { redirect_to(:action => :waiting_list) }
+        format.json { render :json => { 'error' => @flash }}
+      end
     end
-    
   end
 
   def new
@@ -69,7 +77,8 @@ class MatchesController < ApplicationController
       respond_with(@match) do |format|
         format.html { redirect_to @match }
         format.json do
-          @match.update_attributes({:completed => true})
+          @match.update_attributes({:completed => true,
+                                    :in_progress => false})
           return_match_as_json(@match)
         end
       end
@@ -222,8 +231,12 @@ class MatchesController < ApplicationController
   end
 
   def return_match_as_json(match)
-    render :json => { :match => match,
-                      :players => match.players }
+    if match.players
+      render :json => { :match => match,
+                        :players => match.players }
+    else
+      render :json => { :match => match }
+    end
   end
 
   def return_matches_as_json(matches)

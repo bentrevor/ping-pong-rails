@@ -34,6 +34,14 @@ describe MatchesController do
         assigns(:flash).should == 'Please enter two or four player names.'
         response.should redirect_to('/matches/new')
       end
+
+      it "shows a flash message when there is no in-progress match" do
+        post :create, :match => {:names => ["name 1", "name 2"]}
+
+        get :in_progress, :id => Match.first.id
+        assigns(:flash).should == 'There is no match in progress.'
+        response.should redirect_to('/matches/waiting_list')
+      end
     end
 
     describe "creating teams" do
@@ -306,7 +314,9 @@ describe MatchesController do
 
       json_response = JSON.parse response.body
 
-      json_response['match']['completed'].should == true
+      match.reload
+      match.completed.should == true
+      match.in_progress.should == false
       match.games[0].team_1_score.should == 1
       match.games[0].team_2_score.should == 2
     end
@@ -397,6 +407,14 @@ describe MatchesController do
         json_response = JSON.parse response.body
         Match.first.games[0].team_1_score.should == 0
         json_response['error'].should == 'You must start a match before updating its scores.'
+      end
+
+      it "returns error when no match is in progress" do
+        get :in_progress, :id => Match.first.id
+
+        json_response = JSON.parse response.body
+
+        json_response['error'].should == 'There is no match in progress.'
       end
     end
   end
