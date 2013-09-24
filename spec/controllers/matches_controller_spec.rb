@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'app/controllers/matches_controller'
+require 'pp'
 
 describe MatchesController do
   context "creating matches" do
@@ -15,6 +16,24 @@ describe MatchesController do
       post :create, :match => {:names => ["name 1", "name 2"]}
 
       Match.count.should == 1
+    end
+
+    context "errors" do
+      it "fails when given only one player name" do
+        post :create, :match => {:names => ["name 1"]}
+
+        Match.count.should == 0
+        assigns(:flash).should == 'Please enter two or four player names.'
+        response.should redirect_to('/matches/new')
+      end
+
+      it "fails when given three player names" do
+        post :create, :match => {:names => ["name 1", "name 2", "name 3"]}
+
+        Match.count.should == 0
+        assigns(:flash).should == 'Please enter two or four player names.'
+        response.should redirect_to('/matches/new')
+      end
     end
 
     describe "creating teams" do
@@ -70,10 +89,7 @@ describe MatchesController do
 
     describe "redirects" do
       it "redirects to waiting list after creation" do
-        player1 = Player.create({:name => "player1 name"})
-        player2 = Player.create({:name => "player2 name"})
-
-        post :create, :match => {:names => [player1.name, player2.name]}
+        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
         response.should redirect_to('/matches/waiting_list')
       end
@@ -88,13 +104,25 @@ describe MatchesController do
 
       it "redirects to show after updating" do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
-
-      post :update, :id => Match.first.id, :match =>
+        id = Match.first.id
+        post :start, :id => id
+        post :update, :id => id, :match =>
                                              {:game1 => {:team_1_score => 1, :team_2_score => 2},
                                               :game2 => {:team_1_score => 3, :team_2_score => 4},
                                               :game3 => {:team_1_score => 5, :team_2_score => 6}}
 
-        response.should redirect_to("/matches/#{Match.first.id}")
+        response.should redirect_to("/matches/#{id}")
+      end
+
+      context "for failures" do
+        it "redirects with flash message when trying to start a second match" do
+          create_three_matches
+          post :start, :id => Match.first.id
+          post :start, :id => Match.last.id
+
+          response.should redirect_to('/matches/waiting_list')
+          assigns(:flash).should == 'A match is already in progress.'
+        end
       end
     end
   end
@@ -124,7 +152,7 @@ describe MatchesController do
 
     it "can update a match without completing it" do
       post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
-
+      post :start, :id => Match.first.id
       post :update, :id => Match.first.id, :match =>
                                              {:game1 => {:team_1_score => 1, :team_2_score => 2},
                                               :game2 => {:team_1_score => 3, :team_2_score => 4},
@@ -147,13 +175,14 @@ describe MatchesController do
     describe "finishing a match" do
       before :each do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+        id = Match.first.id
+        post :start, :id => id
+        post :update, :id => id, :match =>
+                                   {:game1 => {:team_1_score => 11, :team_2_score => 2},
+                                    :game2 => {:team_1_score => 11, :team_2_score => 4},
+                                    :game3 => {:team_1_score => 11, :team_2_score => 6}}
 
-        post :update, :id => Match.first.id, :match =>
-                                               {:game1 => {:team_1_score => 11, :team_2_score => 2},
-                                                :game2 => {:team_1_score => 11, :team_2_score => 4},
-                                                :game3 => {:team_1_score => 11, :team_2_score => 6}}
-
-        post :finish, :id => Match.first.id
+        post :finish, :id => id
         @match = assigns(:match)
       end
 
@@ -222,6 +251,153 @@ describe MatchesController do
       match_in_progress = assigns(:in_progress)
 
       match_in_progress.should == Match.last
+    end
+  end
+
+  context "json api" do
+    before :each do
+      request.accept = 'application/json'
+      post :create, :match => {:names => ["player1 name", "player2 name"]}
+    end
+
+    it "can create a match" do
+      json_response = JSON.parse response.body
+
+      json_response['Status'].should == "OK"
+    end
+
+    it "can show a match" do
+      get :show, :id => Match.first.id
+
+      json_response = JSON.parse response.body
+
+      json_response['match']['id'].should == Match.first.id
+      json_response['players'][0]['name'].should == 'player1 name'
+      json_response['players'][1]['name'].should == 'player2 name'
+    end
+
+    it "can show the in-progress match" do
+      post :start, :id => Match.first.id
+      get :in_progress
+
+      json_response = JSON.parse response.body
+
+      json_response['match']['id'].should == Match.first.id
+      json_response['players'][0]['name'].should == 'player1 name'
+      json_response['players'][1]['name'].should == 'player2 name'
+    end
+
+    it "can start a match" do
+      Match.first.in_progress.should == false
+      post :start, :id => Match.first.id
+
+      json_response = JSON.parse response.body
+
+      json_response['match']['in_progress'].should == true
+    end
+
+    it "can finish a match" do
+      match = Match.first
+      post :start, :id => match.id
+      post :update, :id => match.id, :match =>
+                                           {:game1 => {:team_1_score => 1, :team_2_score => 2},
+                                            :game2 => {:team_1_score => 3, :team_2_score => 4},
+                                            :game3 => {:team_1_score => 5, :team_2_score => 6}}
+
+      json_response = JSON.parse response.body
+
+      json_response['match']['completed'].should == true
+      match.games[0].team_1_score.should == 1
+      match.games[0].team_2_score.should == 2
+    end
+
+    context "listing matches" do
+      before :each do
+        create_three_matches
+        create_four_completed_matches
+      end
+
+      it "can get a list of all matches" do
+        get :index
+
+        json_response = JSON.parse response.body
+
+        json_response['matches'].length.should == 8
+        json_response['matches'].first['id'].should == Match.first.id
+      end
+
+      it "can show all waiting list matches" do
+        get :waiting_list
+
+        json_response = JSON.parse response.body
+
+        json_response['matches'].length.should == 4
+        json_response['matches'].each do |match|
+          match['completed'].should == false
+        end
+      end
+
+      it "can get a list of all finished matches with scores" do
+        get :finished
+
+        json_response = JSON.parse response.body
+
+        json_response['matches'].length.should == 4
+        json_response['matches'].each do |match|
+          match['completed'].should == true
+        end
+      end
+
+      it "returns scores for completed matches in the index" do
+        create_three_matches
+        post :start, :id => Match.last.id
+        post :update, :id => Match.last.id, :match =>
+                                              {:game1 => {:team_1_score => 1, :team_2_score => 2},
+                                               :game2 => {:team_1_score => 3, :team_2_score => 4},
+                                               :game3 => {:team_1_score => 5, :team_2_score => 6}}
+        get :index
+
+        json_response = JSON.parse response.body
+
+        json_response['matches'].first['completed'].should == false
+        json_response['matches'].first['games'].should == nil
+
+        json_response['matches'].last['completed'].should == true
+        json_response['scores'][Match.last.id.to_s][0]['team_1_score.should'] == 1
+        json_response['scores'][Match.last.id.to_s][0]['team_2_score.should'] == 2
+      end
+    end
+
+    context "errors" do
+      it "requires two player names" do
+        post :create, :match => {:names => ["player3 name"]}
+
+        json_response = JSON.parse response.body
+
+        json_response['error'].should == 'Please enter two or four player names.'
+      end
+
+      it "can only start one match at a time" do
+        post :create, :match => {:names => ["player3 name", "player4 name"]}
+        post :start, :id => Match.first.id
+        post :start, :id => Match.last.id
+
+        json_response = JSON.parse response.body
+
+        Match.last.in_progress.should == false
+        json_response['error'].should == 'A match is already in progress.'
+      end
+
+      it "can't update scores for games that aren't in progress" do
+        post :update, :id => Match.first.id, :match =>
+                                               {:game1 => {:team_1_score => 1, :team_2_score => 2},
+                                                :game2 => {:team_1_score => 3, :team_2_score => 4},
+                                                :game3 => {:team_1_score => 5, :team_2_score => 6}}
+
+        json_response = JSON.parse response.body
+        Match.first.games[0].team_1_score.should == 0
+        json_response['error'].should == 'You must start a match before updating its scores.'
+      end
     end
   end
 

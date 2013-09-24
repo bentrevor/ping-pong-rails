@@ -1,29 +1,55 @@
 class MatchesController < ApplicationController
+  respond_to :html, :json
+
   def index
     @matches = Match.all
     @page_title = "All Matches"
+
+    respond_with(@matches) do |format|
+      format.html
+      format.json { return_matches_as_json(@matches) }
+    end
   end
 
   def show
     @match = Match.find(params[:id])
     @page_title = "Match ##{@match.id}"
     @winning_team = Team.find(@match.winner) if @match.winner
+
+    respond_with(@match) do |format|
+      format.html
+      format.json { return_match_as_json(@match) }
+    end
   end
 
   def waiting_list
     @matches = Match.where(:completed => false, :in_progress => false)
     @page_title = "Waiting List"
+
+    respond_with(@matches) do |format|
+      format.html
+      format.json { return_matches_as_json(@matches) }
+    end
   end
 
   def finished
     @matches = Match.where(:completed => true)
     @page_title = "Finished Matches"
+
+    respond_with(@matches) do |format|
+      format.html
+      format.json { return_matches_as_json(@matches) }
+    end
   end
 
   def in_progress
     @in_progress = Match.where(:in_progress => true).first
 
-    redirect_to(:action => :waiting_list) unless @in_progress
+    respond_with(@in_progress) do |format|
+      format.html { redirect_to(:action => :waiting_list) unless @in_progress }
+      format.json { return_match_as_json(@in_progress) }
+    end
+    
   end
 
   def new
@@ -39,11 +65,22 @@ class MatchesController < ApplicationController
   def update
     @match = Match.find params[:id]
 
-    @match.games[0].update_attributes(match_params[:game1])
-    @match.games[1].update_attributes(match_params[:game2])
-    @match.games[2].update_attributes(match_params[:game3])
+    if @match.in_progress and update_games_for @match
+      respond_with(@match) do |format|
+        format.html { redirect_to @match }
+        format.json do
+          @match.update_attributes({:completed => true})
+          return_match_as_json(@match)
+        end
+      end
+    else
+      respond_with do |format|
+        @flash = 'You must start a match before updating its scores.'
 
-    redirect_to @match
+        format.html { redirect_to :action => :waiting_list }
+        format.json { render :json => { 'error' => @flash }}
+      end
+    end
   end
 
   def finish
@@ -64,9 +101,19 @@ class MatchesController < ApplicationController
 
     if no_in_progress_matches?
       @match.update_attributes({:in_progress => true})
-    end
 
-    redirect_to :action => :in_progress
+      respond_with(@match) do |format|
+        format.html { redirect_to :action => :in_progress }
+        format.json { return_match_as_json(@match) }
+      end
+    else
+      respond_with do |format|
+        @flash = 'A match is already in progress.'
+
+        format.html { redirect_to :action => :waiting_list }
+        format.json { render :json => { 'error' => @flash }}
+      end
+    end
   end
 
   def create
@@ -78,9 +125,19 @@ class MatchesController < ApplicationController
 
     @match.completed = match_params[:completed] || false
     @match.number_of_games = match_params[:number_of_games]
-    @match.save
+    if @match.save
+      respond_with(@match) do |format|
+        format.html { redirect_to :action => :waiting_list }
+        format.json { render :json => { 'Status' => 'OK' }}
+      end
+    else
+      respond_with do |format|
+        @flash = 'Please enter two or four player names.'
 
-    redirect_to :action => :waiting_list
+        format.html { redirect_to :action => :new }
+        format.json { render :json => { 'error' => @flash }}
+      end
+    end
   end
 
   def destroy
@@ -162,5 +219,27 @@ class MatchesController < ApplicationController
     end
 
     teams
+  end
+
+  def return_match_as_json(match)
+    render :json => { :match => match,
+                      :players => match.players }
+  end
+
+  def return_matches_as_json(matches)
+    scores = {}
+
+    matches.each do |match|
+      scores[match.id] = match.games if match['completed']
+    end
+
+    render :json => { :matches => matches,
+                      :scores => scores }
+  end
+
+  def update_games_for(match)
+    match.games[0].update_attributes(match_params[:game1])
+    match.games[1].update_attributes(match_params[:game2])
+    match.games[2].update_attributes(match_params[:game3])
   end
 end

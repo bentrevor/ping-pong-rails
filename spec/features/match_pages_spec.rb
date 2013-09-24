@@ -54,6 +54,7 @@ describe "Match pages" do
       visit '/matches'
 
       match = Match.last
+      match.update_attributes({:in_progress => true})
 
       visit "/matches/#{match.id}/edit"
 
@@ -206,6 +207,7 @@ describe "Match pages" do
     create_match_between 'player1', 'player2'
 
     match = Match.last
+    match.update_attributes({:in_progress => true})
 
     visit "/matches/#{match.id}/edit"
 
