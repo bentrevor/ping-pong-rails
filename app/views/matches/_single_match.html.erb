@@ -1,6 +1,16 @@
-<%= render "match_names", :match => match %>
+
+<div>
+  <% if match.completed %>
+    <span class="completed_at"><%= match.completed_at.strftime "%b %e" %><br /><%= match.completed_at.strftime "%l:%M" %></span>
+  <% end %>
+</div>
 
 <table class="scores_table">
+    <tr>
+      <td></td>
+      <td><%= render "team_names", :team => match.teams.first %></td>
+      <td><%= render "team_names", :team => match.teams.last %></td>
+    </tr>
   <% match.games.each_with_index do |game, index| %>
     <tr>
       <td>Game <%= index + 1 %></td>
@@ -10,6 +20,8 @@
   <% end %>
 </table>
 
-<% if match.winner and defined? winning_team %>
-  <p>winner: <%= render "team_names", :team => winning_team %></p>
-<% end %>
+<div>
+  <% if match.completed %>
+    <p>winner: <%= render "team_names", :team => Team.find(match.winner) %></p>
+  <% end %>
+</div>

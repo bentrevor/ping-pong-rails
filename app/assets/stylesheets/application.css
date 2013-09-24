@@ -13,27 +13,19 @@
  */
 
 html {
-  background: #222222;
+  background: #999999;
 }
 
-#navbar {
-  margin: 20px auto;
-  width: 80%;
-  background: #cccccc;
-  padding: 10px;
-  text-align: center;
-
-  -moz-border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -o-border-radius: 8px;
-  border-radius: 8px;
+td {
+  padding: 5px;
+  border: 1px solid black;
 }
 
-#content_container, #flash_message {
+#content_container, #navbar, #flash_message {
   margin: auto;
   width: 80%;
   background: #cccccc;
-  padding: 10px;
+  padding: 20px;
   text-align: center;
 
   -moz-border-radius: 8px;
@@ -45,6 +37,10 @@ html {
   -webkit-box-shadow: 1px 1px 8px black;
   -o-box-shadow: 1px 1px 8px black;
   box-shadow: 1px 1px 8px black;
+}
+
+#navbar {
+  margin: 20px auto;
 }
 
 .match {
@@ -109,10 +105,16 @@ html {
 
 .team_2 {
   float: right;
+  text-align: center;
 }
 
 .team_1 {
   float: left;
+  text-align: center;
+}
+
+.teams {
+  margin: 0px auto;
 }
 
 .completed_at {

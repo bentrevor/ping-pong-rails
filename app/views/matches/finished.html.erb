@@ -1,8 +1,7 @@
 <ul>
   <% @matches.reverse.each do |match| %>
     <li>
-    <div class="match">
-      <span class="completed_at"><%= match.completed_at.strftime "%b %e" %><br /><%= match.completed_at.strftime "%l:%M" %></span>
+    <div class="match cf">
       <%= render "single_match", :match => match %>
       <%= link_to "Show match", match_path(match), {:class => 'button_link'} %>
       <%= link_to "Delete match", match_path(match), {:class => 'button_link', :method => :delete} %>
