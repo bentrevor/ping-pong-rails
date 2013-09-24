@@ -23,7 +23,7 @@ describe MatchesController do
         post :create, :match => {:names => ["name 1"]}
 
         Match.count.should == 0
-        assigns(:flash).should == 'Please enter two or four player names.'
+        flash[:notice].should == 'Please enter two or four player names.'
         response.should redirect_to('/matches/new')
       end
 
@@ -31,7 +31,7 @@ describe MatchesController do
         post :create, :match => {:names => ["name 1", "name 2", "name 3"]}
 
         Match.count.should == 0
-        assigns(:flash).should == 'Please enter two or four player names.'
+        flash[:notice].should == 'Please enter two or four player names.'
         response.should redirect_to('/matches/new')
       end
 
@@ -39,7 +39,7 @@ describe MatchesController do
         post :create, :match => {:names => ["name 1", "name 2"]}
 
         get :in_progress, :id => Match.first.id
-        assigns(:flash).should == 'There is no match in progress.'
+        flash[:notice].should == 'There is no match in progress.'
         response.should redirect_to('/matches/waiting_list')
       end
     end
@@ -96,21 +96,23 @@ describe MatchesController do
     end
 
     describe "redirects" do
-      it "redirects to waiting list after creation" do
+      it "redirects (with a flash message) to waiting list after creation" do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
         response.should redirect_to('/matches/waiting_list')
+        flash[:notice].should == "Match created successfully."
       end
 
-      it "redirects to waiting list after destruction" do
+      it "redirects (with a flash message) to waiting list after destruction" do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
         delete :destroy, :id => Match.first.id
 
         response.should redirect_to('/matches/waiting_list')
+        flash[:notice].should == "Match has been deleted."
       end
 
-      it "redirects to show after updating" do
+      it "redirects to current match after updating" do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
         id = Match.first.id
         post :start, :id => id
@@ -119,7 +121,7 @@ describe MatchesController do
                                               :game2 => {:team_1_score => 3, :team_2_score => 4},
                                               :game3 => {:team_1_score => 5, :team_2_score => 6}}
 
-        response.should redirect_to("/matches/#{id}")
+        response.should redirect_to("/matches/in_progress")
       end
 
       context "for failures" do
@@ -129,7 +131,7 @@ describe MatchesController do
           post :start, :id => Match.last.id
 
           response.should redirect_to('/matches/waiting_list')
-          assigns(:flash).should == 'A match is already in progress.'
+          flash[:notice].should == 'A match is already in progress.'
         end
       end
     end
@@ -259,6 +261,16 @@ describe MatchesController do
       match_in_progress = assigns(:in_progress)
 
       match_in_progress.should == Match.last
+    end
+  end
+
+  context "flash messages" do
+    it "sets a flash message when there's no current match" do
+      create_three_matches
+
+      get :in_progress
+
+      flash[:notice].should == "There is no match in progress."
     end
   end
 

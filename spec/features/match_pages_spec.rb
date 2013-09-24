@@ -89,7 +89,8 @@ describe "Match pages" do
       visit '/matches/finished'
 
       page.body.should have_content 'player1 vs. player2'
-      page.body.should have_content "2013-09-17 15:57:45 UTC"
+      page.body.should have_content "Sep 17"
+      page.body.should have_content "3:57"
       page.body.should_not have_content 'player3 vs. player4'
     end
 

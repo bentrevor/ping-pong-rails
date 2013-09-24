@@ -29,7 +29,7 @@ html {
   border-radius: 8px;
 }
 
-#content_container {
+#content_container, #flash_message {
   margin: auto;
   width: 80%;
   background: #cccccc;
@@ -51,8 +51,8 @@ html {
   margin: 10px auto;
   width: 90%;
   background: #999999;
-  height: 5em;
-  padding: .5em;
+  overflow: auto;
+  padding: 1em;
   text-align: center;
 
   -moz-border-radius: 8px;
@@ -107,10 +107,6 @@ html {
   float: left;
 }
 
-table {
-  margin: 0 auto;
-}
-
 .team_2 {
   float: right;
 }
@@ -122,7 +118,12 @@ table {
 .completed_at {
   float: left;
   font-size: 0.8em;
+  margin-right: 1em;
 }
 
+.scores_table {
+  margin: 0px auto;
+  padding: 20px;
+}
 
 

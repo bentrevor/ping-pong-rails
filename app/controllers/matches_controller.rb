@@ -44,6 +44,7 @@ class MatchesController < ApplicationController
 
   def in_progress
     @in_progress = Match.where(:in_progress => true).first
+    @page_title = "Current Match"
 
     if @in_progress
       respond_with(@in_progress) do |format|
@@ -51,11 +52,11 @@ class MatchesController < ApplicationController
         format.json { return_match_as_json(@in_progress) }
       end
     else
-      @flash = 'There is no match in progress.'
+      flash[:notice] = 'There is no match in progress.'
 
       respond_with(@in_progress) do |format|
         format.html { redirect_to(:action => :waiting_list) }
-        format.json { render :json => { 'error' => @flash }}
+        format.json { render :json => { 'error' => flash[:notice] }}
       end
     end
   end
@@ -75,7 +76,7 @@ class MatchesController < ApplicationController
 
     if @match.in_progress and update_games_for @match
       respond_with(@match) do |format|
-        format.html { redirect_to @match }
+        format.html { redirect_to :action => :in_progress }
         format.json do
           @match.update_attributes({:completed => true,
                                     :in_progress => false})
@@ -84,10 +85,10 @@ class MatchesController < ApplicationController
       end
     else
       respond_with do |format|
-        @flash = 'You must start a match before updating its scores.'
+        flash[:notice] = 'You must start a match before updating its scores.'
 
         format.html { redirect_to :action => :waiting_list }
-        format.json { render :json => { 'error' => @flash }}
+        format.json { render :json => { 'error' => flash[:notice] }}
       end
     end
   end
@@ -117,10 +118,10 @@ class MatchesController < ApplicationController
       end
     else
       respond_with do |format|
-        @flash = 'A match is already in progress.'
+        flash[:notice] = 'A match is already in progress.'
 
         format.html { redirect_to :action => :waiting_list }
-        format.json { render :json => { 'error' => @flash }}
+        format.json { render :json => { 'error' => flash[:notice] }}
       end
     end
   end
@@ -135,22 +136,25 @@ class MatchesController < ApplicationController
     @match.completed = match_params[:completed] || false
     @match.number_of_games = match_params[:number_of_games]
     if @match.save
+      flash[:notice] = "Match created successfully."
+
       respond_with(@match) do |format|
         format.html { redirect_to :action => :waiting_list }
         format.json { render :json => { 'Status' => 'OK' }}
       end
     else
       respond_with do |format|
-        @flash = 'Please enter two or four player names.'
+        flash[:notice] = 'Please enter two or four player names.'
 
         format.html { redirect_to :action => :new }
-        format.json { render :json => { 'error' => @flash }}
+        format.json { render :json => { 'error' => flash[:notice] }}
       end
     end
   end
 
   def destroy
     Match.find(params[:id]).destroy
+    flash[:notice] = "Match has been deleted."
     redirect_to :action => :waiting_list
   end
 
