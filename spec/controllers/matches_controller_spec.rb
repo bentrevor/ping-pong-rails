@@ -359,7 +359,7 @@ describe MatchesController do
         end
       end
 
-      it "can get a list of all finished matches with scores" do
+      it "can get a list of all finished matches with scores and players" do
         get :finished
 
         json_response = JSON.parse response.body
@@ -368,15 +368,15 @@ describe MatchesController do
         json_response['matches'].each do |match|
           match['completed'].should == true
         end
+        json_response['scores'].should_not == nil
+        json_response['players'].should_not == nil
       end
 
       it "returns scores for completed matches in the index" do
         create_three_matches
         post :start, :id => Match.last.id
         post :update, :id => Match.last.id, :match =>
-                                              {:game1 => {:team_1_score => 1, :team_2_score => 2},
-                                               :game2 => {:team_1_score => 3, :team_2_score => 4},
-                                               :game3 => {:team_1_score => 5, :team_2_score => 6}}
+                                              {:game1 => {:team_1_score => 1, :team_2_score => 2}}
         get :index
 
         json_response = JSON.parse response.body

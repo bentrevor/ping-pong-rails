@@ -245,13 +245,16 @@ class MatchesController < ApplicationController
 
   def return_matches_as_json(matches)
     scores = {}
+    players = {}
 
     matches.each do |match|
       scores[match.id] = match.games if match['completed']
+      players[match.id] = match.players
     end
 
     render :json => { :matches => matches,
-                      :scores => scores }
+                      :scores => scores,
+                      :players => players }
   end
 
   def update_games_for(match)

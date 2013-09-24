@@ -21,7 +21,7 @@
 </table>
 
 <div>
-  <% if match.completed %>
+  <% if match.completed and match.winner %>
     <p>winner: <%= render "team_names", :team => Team.find(match.winner) %></p>
   <% end %>
 </div>

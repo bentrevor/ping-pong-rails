@@ -16,7 +16,7 @@ describe "Match pages" do
 
       visit '/matches/in_progress'
 
-      page.body.should have_content 'player1 vs. player2'
+      page.body.should have_content 'player1', 'player2'
       page.body.should have_content '11'
       page.body.should have_content '5'
     end
@@ -69,15 +69,14 @@ describe "Match pages" do
 
       visit "/matches"
 
-      page.body.should have_content 'player1 vs. player2'
-      page.body.should have_content 'player3 vs. player4'
-
-      page.body.should have_content '111111'
-      page.body.should have_content '222222'
-      page.body.should have_content '333333'
-      page.body.should have_content '444444'
-      page.body.should have_content '555555'
-      page.body.should have_content '666666'
+      page.body.should have_content 'player1', 'player2',
+                                    'player3', 'player4',
+                                    '111111',
+                                    '222222',
+                                    '333333',
+                                    '444444',
+                                    '555555',
+                                    '666666'
     end
 
     it "can list all completed matches" do
@@ -88,9 +87,10 @@ describe "Match pages" do
 
       visit '/matches/finished'
 
-      page.body.should have_content 'player1 vs. player2'
-      page.body.should have_content "Sep 17"
-      page.body.should have_content "3:57"
+      page.body.should have_content 'player1', 'player2'
+                                    'Sep 17'
+                                    '3:57'
+
       page.body.should_not have_content 'player3 vs. player4'
     end
 
@@ -172,9 +172,9 @@ describe "Match pages" do
 
     visit '/matches/1'
 
-    page.body.should have_content 'player1 vs. player2'
-    page.body.should have_content '11'
-    page.body.should have_content '5'
+    page.body.should have_content 'player1', 'player2',
+                                  '11',
+                                  '5'
   end
 
   it "can show doubles teams" do
