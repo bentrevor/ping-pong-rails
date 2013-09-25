@@ -3,37 +3,31 @@ require 'app/controllers/matches_controller'
 require 'pp'
 
 describe MatchesController do
-  context '#show' do
-    it "finds a match by a given id" do
-      post :create, :match => {:names => ["player1 name", "player2 name"]}
-      get :show, :id => Match.first.id
+  context '#show and #edit' do
+    [:show, :edit].each do |action|
+      it "#{action}: finds a match by a given id" do
+        post :create, :match => {:names => ["player1 name", "player2 name"]}
+        get action, :id => Match.first.id
 
-      found = assigns(:match)
-      found.should == Match.first
-    end
+        found = assigns(:match)
+        found.should == Match.first
+      end
 
-    it "returns 404 when match isn't found" do
-      post :create, :match => {:names => ["player1 name", "player2 name"]}
+      it "#{action}: returns 404 when match isn't found" do
+        post :create, :match => {:names => ["player1 name", "player2 name"]}
+        get action, :id => Match.last.id + 1
 
-      get :show, :id => Match.last.id + 1
-
-      response.status.should == 404
+        response.status.should == 404
+      end
     end
   end
 
   context "creating matches" do
-    it "can create a match without saving it" do
-      get :new
-      match = assigns(:match)
+    it "can create a match with two or four names" do
+      post :create, :match => {:names => ['name 1', 'name 2']}
+      post :create, :match => {:names => ['name 1', 'name 2', 'name 3', 'name 4']}
 
-      Match.count.should == 0
-      match.should_not == nil
-    end
-
-    it "can create a match given two names" do
-      post :create, :match => {:names => ["name 1", "name 2"]}
-
-      Match.count.should == 1
+      Match.count.should == 2
     end
 
     context "errors" do
@@ -155,7 +149,7 @@ describe MatchesController do
     end
   end
 
-  context "updating match state" do
+  context '#update' do
     it "redirects to in_progress when a match starts" do
       post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 

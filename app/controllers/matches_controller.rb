@@ -5,60 +5,36 @@ class MatchesController < ApplicationController
     @matches = Match.all
     @page_title = "All Matches"
 
-    return_list_of @matches
+    render_list_of @matches
   end
 
   def waiting_list
     @matches = pending_matches
     @page_title = "Waiting List"
 
-    return_list_of @matches
+    render_list_of @matches
   end
 
   def show
     @match = Match.find_by_id(params[:id]) || (render_404 and return)
+    @page_title = "Match ##{@match.id}"
+    @winning_team = Team.find(@match.winner) if @match.winner
 
-    respond_with(@match) do |format|
-      format.html do
-        if @match.nil?
-          flash[:notice] = 'No match exists with that id.'
-          redirect_to(:action => :waiting_list) and return
-        end
-        @page_title = "Match ##{@match.id}"
-        @winning_team = Team.find(@match.winner) if @match.winner
-      end
-
-      format.json { return_match_as_json(@match) }
-    end
+    render_single @match
   end
 
   def finished
     @matches = Match.where(:completed => true)
     @page_title = "Finished Matches"
 
-    respond_with(@matches) do |format|
-      format.html
-      format.json { return_matches_as_json(@matches) }
-    end
+    render_list_of @matches
   end
 
   def in_progress
-    @in_progress = Match.where(:in_progress => true).first
+    @in_progress = current_match || (render_no_current_match and return)
     @page_title = "Current Match"
 
-    if @in_progress
-      respond_with(@in_progress) do |format|
-        format.html
-        format.json { return_match_as_json(@in_progress) }
-      end
-    else
-      flash[:notice] = 'There is no match in progress.'
-
-      respond_with(@in_progress) do |format|
-        format.html { redirect_to(:action => :waiting_list) }
-        format.json { render :json => { 'error' => flash[:notice] }}
-      end
-    end
+    render_single @in_progress
   end
 
   def new
@@ -67,7 +43,7 @@ class MatchesController < ApplicationController
   end
 
   def edit
-    @match = Match.find(params[:id])
+    @match = Match.find_by_id(params[:id]) || (render_404 and return)
     @page_title = "Edit match"
   end
 
@@ -235,12 +211,8 @@ class MatchesController < ApplicationController
   end
 
   def return_match_as_json(match)
-    if match
-      render :json => { :match => match,
-                        :players => match.players }
-    else
-      render :json => { 'error' => 'No match exists with that id.' }
-    end
+    render :json => { :match => match,
+                      :players => match.players }
   end
 
   def return_matches_as_json(matches)
@@ -267,21 +239,42 @@ class MatchesController < ApplicationController
     Match.where(:completed => false, :in_progress => false)
   end
 
-  def return_list_of(matches)
+  def render_list_of(matches)
     respond_with(@matches) do |format|
       format.html
       format.json { return_matches_as_json(@matches) }
     end
   end
 
+  def render_single(match)
+    respond_with(@match) do |format|
+      format.html
+      format.json { return_match_as_json(@match) }
+    end
+  end
+
   def render_404
     respond_to do |format|
       format.html do
+        @page_title = 'Oops!'
         render :file => "#{Rails.root}/public/404.html",
-                           :status => 404
+               :status => 404
       end
 
-        format.json { render :json => { 'error' => 'No match exists with that id.' }}
+      format.json { render :json => { 'error' => 'No match exists with that id.' }}
+    end
+  end
+
+  def current_match
+    Match.where(:in_progress => true).first
+  end
+
+  def render_no_current_match
+    flash[:notice] = 'There is no match in progress.'
+
+    respond_with(@in_progress) do |format|
+      format.html { redirect_to(:action => :waiting_list) }
+      format.json { render :json => { 'error' => flash[:notice] }}
     end
   end
 end
