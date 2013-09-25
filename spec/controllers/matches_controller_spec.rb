@@ -149,7 +149,7 @@ describe MatchesController do
     end
   end
 
-  context '#update' do
+  context '#start' do
     it "redirects to in_progress when a match starts" do
       post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
 
@@ -170,6 +170,15 @@ describe MatchesController do
 
       Match.first.in_progress.should == true
       Match.last.in_progress.should == false
+    end
+  end
+
+  context '#update' do
+    it "returns 404 when match isn't found" do
+      post :create, :match => {:names => ["player1 name", "player2 name"]}
+      put :update, :id => Match.last.id + 1
+
+      response.status.should == 404
     end
 
     it "can update a match without completing it" do
