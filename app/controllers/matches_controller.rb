@@ -5,30 +5,30 @@ class MatchesController < ApplicationController
     @matches = Match.all
     @page_title = "All Matches"
 
-    respond_with(@matches) do |format|
-      format.html
-      format.json { return_matches_as_json(@matches) }
-    end
-  end
-
-  def show
-    @match = Match.find(params[:id])
-    @page_title = "Match ##{@match.id}"
-    @winning_team = Team.find(@match.winner) if @match.winner
-
-    respond_with(@match) do |format|
-      format.html
-      format.json { return_match_as_json(@match) }
-    end
+    return_list_of @matches
   end
 
   def waiting_list
-    @matches = Match.where(:completed => false, :in_progress => false)
+    @matches = pending_matches
     @page_title = "Waiting List"
 
-    respond_with(@matches) do |format|
-      format.html
-      format.json { return_matches_as_json(@matches) }
+    return_list_of @matches
+  end
+
+  def show
+    @match = Match.find_by_id(params[:id]) || (render_404 and return)
+
+    respond_with(@match) do |format|
+      format.html do
+        if @match.nil?
+          flash[:notice] = 'No match exists with that id.'
+          redirect_to(:action => :waiting_list) and return
+        end
+        @page_title = "Match ##{@match.id}"
+        @winning_team = Team.find(@match.winner) if @match.winner
+      end
+
+      format.json { return_match_as_json(@match) }
     end
   end
 
@@ -235,11 +235,11 @@ class MatchesController < ApplicationController
   end
 
   def return_match_as_json(match)
-    if match.players
+    if match
       render :json => { :match => match,
                         :players => match.players }
     else
-      render :json => { :match => match }
+      render :json => { 'error' => 'No match exists with that id.' }
     end
   end
 
@@ -261,5 +261,27 @@ class MatchesController < ApplicationController
     match.games[0].update_attributes(match_params[:game1])
     match.games[1].update_attributes(match_params[:game2])
     match.games[2].update_attributes(match_params[:game3])
+  end
+
+  def pending_matches
+    Match.where(:completed => false, :in_progress => false)
+  end
+
+  def return_list_of(matches)
+    respond_with(@matches) do |format|
+      format.html
+      format.json { return_matches_as_json(@matches) }
+    end
+  end
+
+  def render_404
+    respond_to do |format|
+      format.html do
+        render :file => "#{Rails.root}/public/404.html",
+                           :status => 404
+      end
+
+        format.json { render :json => { 'error' => 'No match exists with that id.' }}
+    end
   end
 end

@@ -3,6 +3,24 @@ require 'app/controllers/matches_controller'
 require 'pp'
 
 describe MatchesController do
+  context '#show' do
+    it "finds a match by a given id" do
+      post :create, :match => {:names => ["player1 name", "player2 name"]}
+      get :show, :id => Match.first.id
+
+      found = assigns(:match)
+      found.should == Match.first
+    end
+
+    it "returns 404 when match isn't found" do
+      post :create, :match => {:names => ["player1 name", "player2 name"]}
+
+      get :show, :id => Match.last.id + 1
+
+      response.status.should == 404
+    end
+  end
+
   context "creating matches" do
     it "can create a match without saving it" do
       get :new
@@ -427,6 +445,14 @@ describe MatchesController do
         json_response = JSON.parse response.body
 
         json_response['error'].should == 'There is no match in progress.'
+      end
+
+      it "returns error for non-existent id" do
+        get :show, :id => (Match.last.id + 1)
+
+        json_response = JSON.parse response.body
+
+        json_response['error'].should == 'No match exists with that id.'
       end
     end
   end
