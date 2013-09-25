@@ -54,7 +54,7 @@ class MatchesController < ApplicationController
 
     return redirect_with_error(:in_progress, 'You must start a match before updating its scores.') unless ready_to_update @match
 
-    respond_with(@match) do |format|
+    respond_to do |format|
       format.html { redirect_to :action => :in_progress }
 
       format.json do
@@ -69,30 +69,17 @@ class MatchesController < ApplicationController
 
     finalize @match
 
-    winning_team = winner_of @match
-    @match.update_attributes({:winner => winning_team.id}) if winning_team
-
     redirect_to @match
   end
 
   def start
     @match = Match.find params[:id]
+    return redirect_with_error(:waiting_list,
+                               'A match is already in progress.') if any_match_already_in_progress?
 
-    if no_in_progress_matches?
-      @match.update_attributes({:in_progress => true})
+    @match.update_attributes({:in_progress => true})
 
-      respond_with(@match) do |format|
-        format.html { redirect_to :action => :in_progress }
-        format.json { return_match_as_json(@match) }
-      end
-    else
-      respond_with do |format|
-        flash[:notice] = 'A match is already in progress.'
-
-        format.html { redirect_to :action => :waiting_list }
-        format.json { render :json => { 'error' => flash[:notice] }}
-      end
-    end
+    redirect_with_success :in_progress
   end
 
   def create
@@ -107,12 +94,9 @@ class MatchesController < ApplicationController
     if @match.save
       flash[:notice] = "Match created successfully."
 
-      respond_with(@match) do |format|
-        format.html { redirect_to :action => :waiting_list }
-        format.json { render :json => { 'Status' => 'OK' }}
-      end
+      redirect_with_success :waiting_list
     else
-      respond_with do |format|
+      respond_to do |format|
         flash[:notice] = 'Please enter two or four player names.'
 
         format.html { redirect_to :action => :new }
@@ -161,14 +145,8 @@ class MatchesController < ApplicationController
     end
   end
 
-  def no_in_progress_matches?
-    Match.all.each do |match|
-      if match.in_progress
-        return false
-      end
-    end
-
-    true
+  def any_match_already_in_progress?
+    Match.all.any? { |match| match.in_progress }
   end
 
   def teams_from_params
@@ -227,14 +205,14 @@ class MatchesController < ApplicationController
   end
 
   def render_list_of(matches)
-    respond_with(@matches) do |format|
+    respond_to do |format|
       format.html
       format.json { return_matches_as_json(@matches) }
     end
   end
 
   def render_single(match)
-    respond_with(@match) do |format|
+    respond_to do |format|
       format.html
       format.json { return_match_as_json(@match) }
     end
@@ -269,6 +247,9 @@ class MatchesController < ApplicationController
     match.update_attributes({:in_progress => false,
                              :completed => true,
                              :completed_at => Time.now })
+
+    winning_team = winner_of @match
+    @match.update_attributes({:winner => winning_team.id}) if winning_team
   end
 
   def ready_to_update(match)
@@ -279,9 +260,12 @@ class MatchesController < ApplicationController
     match.games.each_with_index do |game, index|
       match.games[index].update_attributes(match_params["game#{index + 1}".to_sym])
     end
+  end
 
-#     match.games[0].update_attributes(match_params[:game1])
-#     match.games[1].update_attributes(match_params[:game2])
-#     match.games[2].update_attributes(match_params[:game3])
+  def redirect_with_success(action)
+    respond_to do |format|
+      format.html { redirect_to :action => action }
+      format.json { render :json => { 'Status' => 'OK' }}
+    end
   end
 end

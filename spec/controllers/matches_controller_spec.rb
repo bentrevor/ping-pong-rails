@@ -100,7 +100,7 @@ describe MatchesController do
     end
 
     it "can delete a match" do
-      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+      post :create, :match => {:names => ["name 1", "name 2"]}
 
       delete :destroy, :id => Match.first.id
 
@@ -109,14 +109,14 @@ describe MatchesController do
 
     describe "redirects" do
       it "redirects (with a flash message) to waiting list after creation" do
-        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+        post :create, :match => {:names => ["name 1", "name 2"]}
 
         response.should redirect_to('/matches/waiting_list')
         flash[:notice].should == "Match created successfully."
       end
 
       it "redirects (with a flash message) to waiting list after destruction" do
-        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+        post :create, :match => {:names => ["name 1", "name 2"]}
 
         delete :destroy, :id => Match.first.id
 
@@ -125,7 +125,7 @@ describe MatchesController do
       end
 
       it "redirects to current match after updating" do
-        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+        post :create, :match => {:names => ["name 1", "name 2"]}
         id = Match.first.id
         post :start, :id => id
         post :update, :id => id, :match =>
@@ -135,41 +135,28 @@ describe MatchesController do
 
         response.should redirect_to("/matches/in_progress")
       end
-
-      context "for failures" do
-        it "redirects with flash message when trying to start a second match" do
-          create_three_matches
-          post :start, :id => Match.first.id
-          post :start, :id => Match.last.id
-
-          response.should redirect_to('/matches/waiting_list')
-          flash[:notice].should == 'A match is already in progress.'
-        end
-      end
     end
   end
 
   context '#start' do
     it "redirects to in_progress when a match starts" do
-      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
-
+      post :create, :match => {:names => ["name 1", "name 2"]}
       post :start, :id => Match.first.id
 
-      match = assigns(:match)
-
-      match.in_progress.should == true
+      assigns(:match).in_progress.should == true
       response.should redirect_to '/matches/in_progress'
     end
 
     it "can only start one match at a time" do
-      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
-      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+      create_three_matches
 
       post :start, :id => Match.first
       post :start, :id => Match.last
 
       Match.first.in_progress.should == true
       Match.last.in_progress.should == false
+      response.should redirect_to('/matches/waiting_list')
+      flash[:notice].should == 'A match is already in progress.'
     end
   end
 
@@ -182,7 +169,7 @@ describe MatchesController do
     end
 
     it "can update a match without completing it" do
-      post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+      post :create, :match => {:names => ["name 1", "name 2"]}
       post :start, :id => Match.first.id
       post :update, :id => Match.first.id, :match =>
                                              {:game1 => {:team_1_score => 1, :team_2_score => 2},
@@ -205,7 +192,7 @@ describe MatchesController do
 
     describe "finishing a match" do
       before :each do
-        post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 3}
+        post :create, :match => {:names => ["name 1", "name 2"]}
         id = Match.first.id
         post :start, :id => id
         post :update, :id => id, :match =>
@@ -329,12 +316,14 @@ describe MatchesController do
     end
 
     it "can start a match" do
-      Match.first.in_progress.should == false
-      post :start, :id => Match.first.id
+      match = Match.first
+
+      match.in_progress.should == false
+      post :start, :id => match.id
 
       json_response = JSON.parse response.body
 
-      json_response['match']['in_progress'].should == true
+      match.reload.in_progress.should == true
     end
 
     it "can finish a match" do
