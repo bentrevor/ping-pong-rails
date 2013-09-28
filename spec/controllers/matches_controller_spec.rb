@@ -3,10 +3,10 @@ require 'app/controllers/matches_controller'
 require 'pp'
 
 describe MatchesController do
-  context 'GET actions' do
-    before(:each) { post :create, :match => {:names => ["player1 name", "player2 name"]} }
+  context 'finding actions' do
+    before(:each) { create_match_between 'player1', 'player2' }
 
-    [:show, :edit].each do |action|
+    [:show, :edit, :start, :finish].each do |action|
       it "#{action}: finds a match by a given id" do
         get action, :id => Match.first.id
 
@@ -15,26 +15,7 @@ describe MatchesController do
       end
 
       it "#{action}: returns 404 when match isn't found" do
-        get action, :id => Match.last.id + 1
-
-        response.status.should == 404
-      end
-    end
-  end
-
-  context 'POST/PUT actions' do
-    before(:each) { post :create, :match => {:names => ["player1 name", "player2 name"]} }
-
-    [:start, :finish].each do |action|
-      it "#{action}: finds a match by a given id" do
-        get action, :id => Match.first.id
-
-        found = assigns(:match)
-        found.should == Match.first
-      end
-
-      it "#{action}: returns 404 when match isn't found" do
-        post action, :id => Match.last.id + 1
+        (should_get? action) ? (get action, :id => Match.last.id + 1) : (post action, :id => Match.last.id + 1)
 
         response.status.should == 404
       end
@@ -43,83 +24,63 @@ describe MatchesController do
 
   context "creating matches" do
     it "can create a match with two or four names" do
-      post :create, :match => {:names => ['name 1', 'name 2']}
-      post :create, :match => {:names => ['name 1', 'name 2', 'name 3', 'name 4']}
+      create_match_between 'player1', 'player2'
+      create_match_between 'player1', 'player2', 'player3', 'player4'
 
       Match.count.should == 2
     end
 
-    context "errors" do
-      it "fails when given only one player name" do
-        post :create, :match => {:names => ["name 1"]}
+    it "fails when given one player name" do
+      create_match_between 'player1'
 
-        Match.count.should == 0
-        flash[:notice].should == 'Please enter two or four player names.'
-        response.should redirect_to('/matches/new')
-      end
+      assert_wrong_number_of_players
+    end
 
-      it "fails when given three player names" do
-        post :create, :match => {:names => ["name 1", "name 2", "name 3"]}
+    it "fails when given three player names" do
+      create_match_between 'player1', 'player2', 'player3'
 
-        Match.count.should == 0
-        flash[:notice].should == 'Please enter two or four player names.'
-        response.should redirect_to('/matches/new')
-      end
+      assert_wrong_number_of_players
+    end
 
-      it "shows a flash message when there is no in-progress match" do
-        post :create, :match => {:names => ["name 1", "name 2"]}
+    it "shows a flash message when there is no in-progress match" do
+      create_match_between 'player1', 'player2'
 
-        get :in_progress, :id => Match.first.id
-        flash[:notice].should == 'There is no match in progress.'
-        response.should redirect_to('/matches/waiting_list')
-      end
+      get :in_progress, :id => Match.first.id
+      flash[:notice].should == 'There is no match in progress.'
+      response.should redirect_to('/matches/waiting_list')
     end
 
     describe "creating teams" do
       it "makes two teams for singles matches" do
-        post :create, :match => {:names => ["name 1", "name 2"]}
+        create_match_between 'player1', 'player2'
 
         Team.count.should == 2
       end
 
       it "makes two teams for doubles matches" do
-        post :create, :match => {:names => ["name 1", 
-                                            "name 2",
-                                            "name 3",
-                                            "name 4"]}
+        create_match_between 'player1', 'player2', 'player3', 'player4'
 
         Team.count.should == 2
       end
     end
 
-    describe "creating games" do
+    describe "number of games" do
       it "can have an odd number of games" do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 5}
 
-        match = Match.first
-
-        match.games.length.should == 5
+        Game.count.should == 5
       end
 
-      it "can't have an even number of games" do
+      it "has 3 games when number of games is even or absent" do
         post :create, :match => {:names => ["name 1", "name 2"], :number_of_games => 4}
-
-        match = Match.first
-
-        match.games.length.should == 3
-      end
-
-      it "defaults to having three games" do
         post :create, :match => {:names => ["name 1", "name 2"]}
 
-        match = Match.first
-
-        match.games.length.should == 3
+        Game.count.should == 6
       end
     end
 
     it "can delete a match" do
-      post :create, :match => {:names => ["name 1", "name 2"]}
+      create_match_between 'player1', 'player2'
 
       delete :destroy, :id => Match.first.id
 
@@ -127,16 +88,14 @@ describe MatchesController do
     end
 
     describe "redirects" do
-      it "redirects (with a flash message) to waiting list after creation" do
-        post :create, :match => {:names => ["name 1", "name 2"]}
+      before(:each) { create_match_between 'player1', 'player2' }
 
+      it "redirects (with a flash message) to waiting list after creation" do
         response.should redirect_to('/matches/waiting_list')
         flash[:notice].should == "Match created successfully."
       end
 
       it "redirects (with a flash message) to waiting list after destruction" do
-        post :create, :match => {:names => ["name 1", "name 2"]}
-
         delete :destroy, :id => Match.first.id
 
         response.should redirect_to('/matches/waiting_list')
@@ -144,7 +103,6 @@ describe MatchesController do
       end
 
       it "redirects to current match after updating" do
-        post :create, :match => {:names => ["name 1", "name 2"]}
         id = Match.first.id
         post :start, :id => id
         post :update, :id => id, :match =>
@@ -453,6 +411,7 @@ describe MatchesController do
                                                 :game3 => {:team_1_score => 5, :team_2_score => 6}}
 
         json_response = JSON.parse response.body
+
         Match.first.games[0].team_1_score.should == 0
         json_response['error'].should == 'You must start a match before updating its scores.'
       end
@@ -479,14 +438,34 @@ describe MatchesController do
 
   def create_three_matches
     3.times do
-      post :create, :match => {:names => ["player1 name", "player2 name"]}
+      create_match_between 'player1', 'player2'
     end
   end
 
   def create_four_completed_matches
     4.times do
-      post :create, :match => {:names => ["player1 name", "player2 name"]}
+      create_match_between 'player1', 'player2'
       post :finish, :id => Match.last.id
     end
+  end
+
+  def create_match_between(*player_names)
+    names = []
+
+    player_names.each do |name|
+      names << name
+    end
+
+    post :create, :match => {:names => names}
+  end
+
+  def should_get?(action)
+    action == :show || action == :edit
+  end
+
+  def assert_wrong_number_of_players
+    Match.count.should == 0
+    flash[:notice].should == 'Please enter two or four player names.'
+    response.should redirect_to('/matches/new')
   end
 end
